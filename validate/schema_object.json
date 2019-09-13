@@ -1,0 +1,47 @@
+{
+    "doc": "Transport type",
+    "default": null,
+    "format": "Object",
+    "values": {
+        "callee": "common.callee",
+        "level": "common.level",
+        "type": {
+            "doc": "Transport type",
+            "format": "String",
+            "values": ["url"],
+            "default": null
+        },
+        "aha": {
+            "doc": "Transport type",
+            "format": "String",
+            "values": ["url"]
+        },
+        "url": {
+            "doc": "-",
+            "format": "String",
+            "default": null
+        },
+        "derp": {
+            "doc": "-",
+            "format": "String",
+            "default": "karl"
+        },
+        "lol": {
+            "doc": "-",
+            "format": "String"
+        }
+    },
+    "common": {
+        "level": {
+            "doc": "Log level of transport",
+            "type": "String",
+            "values": ["TRACE", "DEBUG", "INFO", "WARN", "ERROR"],
+            "default": "INFO"
+        },
+        "callee": {
+            "doc": "The file and line where the log was called to be included in the log message",
+            "format": "Boolean",
+            "default": false
+        }
+    }
+}

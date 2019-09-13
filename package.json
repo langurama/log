@@ -1,0 +1,36 @@
+{
+    "name": "log",
+    "version": "0.1.0",
+    "description": "Retardedly basic terminal and file logging.",
+    "author": "Karl Morrison <karl@basickarl.io>",
+    "license": "WTFPL",
+    "keywords": [
+        "basickarl",
+        "log",
+        "logging"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:basickarl/log.git"
+    },
+    "main": "index.js",
+    "scripts": {
+        "lint": "eslint .",
+        "style": "",
+        "style:check": "prettier --check \"**/*.js\"",
+        "test": "echo no tests yet"
+    },
+    "engines": {
+        "node": ">=12"
+    },
+    "dependencies": {
+        "@tensorflow/tfjs-node": "^1.2.9",
+        "chalk": "2.4.2",
+        "convict": "5.1.0"
+    },
+    "devDependencies": {
+        "eslint": "6.3.0",
+        "jest": "24.9.0",
+        "prettier": "1.18.2"
+    }
+}
