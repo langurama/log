@@ -1,0 +1,5 @@
+{
+    "watch": ["./distributable", "./test"],
+    "exec": "npm run test && npm run start_dev",
+    "verbose": true
+}
