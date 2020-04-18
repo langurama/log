@@ -13,24 +13,31 @@
         "type": "git",
         "url": "git@github.com:basickarl/log.git"
     },
-    "main": "index.js",
+    "main": "./distributable/",
     "scripts": {
-        "lint": "eslint .",
-        "style": "",
-        "style:check": "prettier --check \"**/*.js\"",
-        "test": "echo no tests yet"
+        "lint": "npx eslint .",
+        "style": "npx prettier --check \"./**/*.js\" --check \"./**/*.json\"",
+        "style_fix": "npx prettier --write \"./**/*.js\" --write \"./**/*.json\"",
+        "test": "npx jest",
+        "build": "npx babel ./source/ -d ./distributable/",
+        "start_dev": "node --nolazy --inspect=9229 ./distributable/ --dev",
+        "dev": "nodemon",
+        "example": "npx babel-node -- ./example/index.js"
     },
     "engines": {
-        "node": ">=12"
+        "node": "12"
     },
-    "dependencies": {
-        "@tensorflow/tfjs-node": "^1.2.9",
-        "chalk": "2.4.2",
-        "convict": "5.1.0"
-    },
+    "dependencies": {},
     "devDependencies": {
+        "@babel/cli": "7.8.4",
+        "@babel/core": "7.9.0",
+        "@babel/node": "7.8.7",
+        "@babel/preset-env": "7.9.5",
+        "babel-jest": "25.3.0",
+        "chalk": "2.4.2",
         "eslint": "6.3.0",
         "jest": "24.9.0",
+        "nodemon": "1.19.2",
         "prettier": "1.18.2"
     }
 }

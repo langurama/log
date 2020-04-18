@@ -1,7 +1,7 @@
 Due to the retardedness of some of the libraries not providing a _simple_ human readable logging library, which can log to file and stdout, I had to tell someone to hold my beer so I could.
 
 ```
-const retardlog = require('retardlog');
+const retardlog = require('log');
 
 const log = retardlog.create([
     {
