@@ -1,14 +1,26 @@
-// Node modules
-const fs = require('fs');
+"use strict";
 
-const path = require('path'); // NPM modules
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.create = create;
+exports.default = exports.defaultFileConfiguration = exports.defaultTerminalConfiguration = void 0;
 
+var _fs = _interopRequireDefault(require("fs"));
 
-const chalk = require('chalk');
+var _path = _interopRequireDefault(require("path"));
 
-const validate = require('configuration');
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-let isVerbose = false;
+// Native modules.
+////////////////////////////////////////////////////////////////////////////////
+// Check if this package is being used in the browser or not.
+const isBrowser = typeof window === 'undefined' ? false : true; // Check if this package is in development mode.
+
+const isDev = process.argv.reduce(function (value, argument) {
+  if (value || argument === '--dev') return true;
+  return false;
+}, false); ////////////////////////////////////////////////////////////////////////////////
 
 function LogError(message) {
   Error.call(this, message);
@@ -20,8 +32,8 @@ function LogError(message) {
 LogError.prototype.__proto__ = Error.prototype;
 
 function createLogsDirectory(logsDirPath) {
-  if (!fs.existsSync(logsDirPath)) {
-    fs.mkdirSync(logsDirPath);
+  if (!_fs.default.existsSync(logsDirPath)) {
+    _fs.default.mkdirSync(logsDirPath);
   }
 }
 
@@ -109,52 +121,43 @@ function getCallee() {
   return new Error().stack.split('\n')[6].split('(')[1].split(')')[0];
 }
 
-function createTerminalTransport(option) {
-  const shouldIncludeCallee = option.callee === false ? false : true;
+function createTerminalTransport(configuration) {
+  const shouldIncludeCallee = configuration.callee;
+  const shouldUseColor = configuration.color !== undefined;
   return function terminalTransport(date, level, messages) {
     const timestamp = getTimestamp(date);
-    let string;
-
-    if (shouldIncludeCallee) {
-      // prettier-ignore
-      string = `${formatMessages(messages)} ${getCallee()}`;
-    } else {
-      string = formatMessages(messages);
-    }
-
-    let log;
+    const string = shouldIncludeCallee ? `${formatMessages(messages)} ${getCallee()}` : formatMessages(messages);
 
     if (level === 'ERROR') {
-      log = `${chalk.grey(timestamp)}  ${chalk.bgBlack(chalk.bgRed.white(chalk.bold(level)))} ${string}\n`;
-      process.stderr.write(log);
-      return;
+      const log = shouldUseColor ? `${configuration.color.grey(timestamp)}  ${configuration.color.bgBlack(configuration.color.bgRed.white(configuration.color.bold(level)))} ${string}` : `${timestamp}  ${level} ${string}`;
+      isBrowser ? console.error(log) : process.stderr.write(log + '\n');
     } else if (level === 'WARN') {
-      log = `${chalk.grey(timestamp)}   ${chalk.bgYellow(chalk.black(chalk.bold(level)))} ${string}\n`;
-      process.stderr.write(log);
-      return;
+      const log = shouldUseColor ? `${configuration.color.grey(timestamp)}   ${configuration.color.bgYellow(configuration.color.black(configuration.color.bold(level)))} ${string}` : `${timestamp}  ${level} ${string}`;
+      isBrowser ? console.warn(log) : process.stderr.write(log) + '\n';
     } else if (level === 'INFO') {
-      log = `${chalk.grey(timestamp)}   ${chalk.white(chalk.bold(level))} ${string}\n`;
+      const log = shouldUseColor ? `${configuration.color.grey(timestamp)}   ${configuration.color.white(configuration.color.bold(level))} ${string}` : `${timestamp}  ${level} ${string}`;
+      isBrowser ? console.info(log) : process.stdout.write(log + '\n');
     } else if (level === 'DEBUG') {
-      log = `${chalk.grey(timestamp)}  ${chalk.cyan(level)} ${string}\n`;
+      const log = shouldUseColor ? `${configuration.color.grey(timestamp)}  ${configuration.color.cyan(level)} ${string}` : `${timestamp}  ${level} ${string}`;
+      isBrowser ? console.debug(log) : process.stdout.write(log + '\n');
     } else if (level === 'TRACE') {
-      log = `${chalk.grey(timestamp)}  ${chalk.green(level)} ${string}\n`;
-    } else {
-      return;
+      const log = shouldUseColor ? `${configuration.color.grey(timestamp)}  ${configuration.color.green(level)} ${string}` : `${timestamp}  ${level} ${string}`;
+      isBrowser ? console.trace(log) : process.stdout.write(log + '\n');
     }
 
-    process.stdout.write(log);
+    return;
   };
 }
 
-function createFileTransport(option) {
-  const shouldIncludeCallee = option.callee === false ? false : true;
-  const shouldJsonFormat = option.json === true ? true : false; // prettier-ignore
+function createFileTransport(configuration) {
+  const shouldIncludeCallee = configuration.callee === false ? false : true;
+  const shouldJsonFormat = configuration.json === true ? true : false; // prettier-ignore
 
-  const isAnAbsolutePath = option.path.startsWith('/') // Linux/macOS
-  || option.path.substring(1).startsWith(':/'); // Windows
+  const isAnAbsolutePath = configuration.path.startsWith('/') // Linux/macOS
+  || configuration.path.substring(1).startsWith(':/'); // Windows
   // prettier-ignore
 
-  const logPathTmp = option.path.split('/');
+  const logPathTmp = configuration.path.split('/');
   logPathTmp.pop();
   const logPath = logPathTmp.join('/');
   let absolutePath;
@@ -164,7 +167,7 @@ function createFileTransport(option) {
     absolutePath = logPath;
   } else {
     // Relative Path
-    absolutePath = path.join(__dirname, logPath);
+    absolutePath = _path.default.join(__dirname, logPath);
   }
 
   createLogsDirectory(absolutePath);
@@ -188,203 +191,215 @@ function createFileTransport(option) {
       log = `${timestamp} ${level} ${string}\n`;
     }
 
-    fs.appendFileSync(absolutePath, log);
+    _fs.default.appendFileSync(absolutePath, log);
   };
 }
+/* 
 
-function Log(configurationOrPath, logConfiguration) {
-  this.isVerbose = logConfiguration && logConfiguration.verbose && logConfiguration.verbose === true;
-  const log = {
-    debug: function (...messages) {
-      if (isVerbose === true) {
-        process.stdout.write(chalk.yellow('[@basickarl/log] ' + messages.toString() + '\n'));
-      }
+const log = createLog([
+    {
+        type: 'file',
+        path: './test/_logs/info_level.log',
+        callee: false,
+        level: 'INFO',
+        verbose: true
     },
-    error: function (...messages) {
-      throw new LogError(chalk.yellow('[@basickarl/log] ') + messages.toString());
+    {
+        type: 'file',
+        path: './test/_logs/error_level.log',
+        level: 'ERROR',
+        json: true
     },
-    info: function (...messages) {
-      process.stdout.write(chalk.yellow('[@basickarl/log] ' + messages.toString() + '\n'));
+    {
+        type: 'terminal',
+        level: 'info'
     }
-  };
-  this.transports = [];
-  this.configuration = getJson(configurationOrPath);
-  const schema = {
-    doc: 'Configuration argument type',
-    default: null,
-    format: 'Array',
-    values: [{
-      callee: 'common.callee',
-      level: 'common.level',
-      type: {
-        doc: 'Transport type',
-        format: 'String',
-        values: ['url'],
-        default: null
-      },
-      url: {
-        doc: '-',
-        format: 'String',
-        default: null
-      }
-    }, {
-      callee: 'common.callee',
-      level: 'common.level',
-      type: {
-        doc: 'Transport type.',
-        format: 'String',
-        values: ['terminal'],
-        default: null
-      }
-    }, {
-      callee: 'common.callee',
-      json: {
-        doc: 'Save the message in JSON format',
-        format: 'Boolean',
-        default: false
-      },
-      level: 'common.level',
-      path: {
-        doc: 'Path to where the log will be saved to',
-        format: 'String',
-        default: null
-      },
-      type: {
-        doc: 'Transport type',
-        format: 'String',
-        values: ['file'],
-        default: null
-      }
-    }],
-    common: {
-      level: {
-        doc: 'Log level of transport',
-        format: 'String',
-        values: ['TRACE', 'DEBUG', 'INFO', 'WARN', 'ERROR'],
-        default: 'INFO'
-      },
-      callee: {
-        doc: 'The file and line where the log was called to be included in the log message',
-        format: 'Boolean',
-        default: false
-      }
+]);
+
+const log = createLog({
+    type: 'terminal',
+    level: 'info'
+});
+*/
+
+
+const defaultTerminalConfiguration = {
+  type: 'terminal',
+  level: 'info',
+  callee: true,
+  chalk: undefined
+};
+exports.defaultTerminalConfiguration = defaultTerminalConfiguration;
+const defaultFileConfiguration = {
+  type: 'file',
+  level: 'info',
+  callee: true,
+  path: './info.log',
+  json: false
+};
+exports.defaultFileConfiguration = defaultFileConfiguration;
+
+function validateConfiguration(userConfiguration) {
+  // Validate if it is an object.
+  const isObjectAndNotNull = typeof userConfiguration === 'object' && userConfiguration !== null;
+  if (!isObjectAndNotNull) throw new Error('"terminal" or "file" configuration must be of type "object".');
+  const isTerminalConfiguration = userConfiguration.type === 'terminal';
+  const isFileConfiguration = userConfiguration.type === 'file'; // Must be of file type "file" or "terminal".
+
+  const validConfigurationType = userConfiguration.type !== undefined && (isTerminalConfiguration || isFileConfiguration);
+
+  if (!validConfigurationType) {
+    throw new Error(`Invalid configuration value for the property "type": ${userConfiguration.type}`);
+  } // If in browser, "terminal" type is only allowed.
+
+
+  if (isBrowser && isFileConfiguration) {
+    throw new Error('Browser may not have a file configuration, it may only include a terminal configuration.');
+  } // Validate if the object has incorrect properties.
+  // const incorrectProperties = Object.keys(userConfiguration).filter(key => {
+  //     if (isTerminalConfiguration) {
+  //         const propertyExistsOnType = defaultTerminalConfiguration[key] !== undefined;
+  //         if (!propertyExistsOnType) return true;
+  //     } else {
+  //         const propertyExistsOnType = defaultFileConfiguration[key] !== undefined;
+  //         if (!propertyExistsOnType) return true;
+  //     }
+  //     return false;
+  // });
+  // Validate if the object has incorrect properties.
+
+
+  const defaultTerminalConfigurationKeys = Object.keys(defaultTerminalConfiguration);
+  const defaultFileConfigurationKeys = Object.keys(defaultFileConfiguration);
+  const incorrectProperties = Object.keys(userConfiguration).filter(key => {
+    if (isTerminalConfiguration) return !defaultTerminalConfigurationKeys.includes(key);
+    return !defaultFileConfigurationKeys.includes(key);
+  });
+  if (incorrectProperties.length > 0) throw new Error(`Unknown properties found, remove them: ${incorrectProperties}`); // Check properties shared by both are correct.
+
+  if (userConfiguration.level && typeof userConfiguration.level !== 'string') throw new Error('Configuration value "level" must be of type "string".');
+  if (userConfiguration.callee && typeof userConfiguration.callee !== 'boolean') throw new Error('Configuration value "callee" must be of type "boolean".'); // if (userConfiguration.chalk) {
+  //     throw new Error('Configuration value "chalk" must be of instance "chalk".');
+  // }
+
+  if (userConfiguration.json && typeof userConfiguration.json !== 'boolean') throw new Error('Configuration value "json" must be of type "boolean".');
+} // Used for debugging this package.
+
+
+function devLog(messages) {
+  if (isDev) {
+    console.log('[@basickarl/log] ' + messages.toString() + '\n');
+  }
+} ////////////////////////////////////////////////////////////////////////////////
+
+
+function create(userConfigurationOrConfigurations) {
+  devLog('Recieved user configuration or configurations:', userConfigurationOrConfigurations); ////////////////////////////////////////////////////////////////////////////////
+  // Validate configuration.
+
+  devLog('Validating user configuration.'); // Check if it is undefined, an array or a single object.
+
+  const isUndefined = userConfigurationOrConfigurations === undefined;
+  const isArray = !isUndefined && Array.isArray(userConfigurationOrConfigurations);
+  const isObjectAndNotNull = typeof userConfigurationOrConfigurations === 'object' && userConfigurationOrConfigurations !== null;
+  const isNotUndefinedOrArrayOrObject = !isUndefined && !isArray && !isObjectAndNotNull;
+
+  if (isNotUndefinedOrArrayOrObject) {
+    // Invalid configuration type.
+    throw new Error('Configuration must be of type "object" or an "array" of "objects".');
+  } // Convery single object into array.
+
+
+  const userConfigurations = isUndefined ? [defaultTerminalConfiguration] // Default.
+  : isObjectAndNotNull ? [userConfigurationOrConfigurations] : userConfigurationOrConfigurations; // All of the configurations check out. Check if there is more than one terminal configuration.
+
+  let numberOfTerminalConfigurations = 0;
+  const configurations = userConfigurations.map(function validateAndcompleteUserConfiguration(configuration) {
+    // Validate.
+    validateConfiguration(configuration);
+    const isTerminalConfiguration = configuration.type === 'terminal';
+
+    if (isTerminalConfiguration) {
+      numberOfTerminalConfigurations += 1;
+      const tooManyTerminalConfigurations = numberOfTerminalConfigurations > 1;
+      if (tooManyTerminalConfigurations) throw new Error(`Only one configuration terminal may be included. Number of configurations found: ${numberOfTerminalConfigurations}`); // Complete.
+
+      return { ...configuration,
+        ...defaultTerminalConfiguration
+      };
+    } else {
+      // Complete.
+      return { ...configuration,
+        ...defaultFileConfiguration
+      };
     }
-  }; // validate('schema_array.json', transportConfigurations);
+  }); // Throw error if there are too many.
 
-  validate(schema, this.configuration); // validate('schema_object.json', transportConfigurations, { verbose: true });
-  // validate(schema, transportConfigurations);
-  // validate('schema.json', './config.json');
-  // validate(schema, '/home/karl/dev/retard-log/src/config.json');
+  devLog('User configuration has been validated.'); ////////////////////////////////////////////////////////////////////////////////
 
-  this.configuration.map(transportConfiguration => {
-    if (transportConfiguration.type === 'terminal') {
-      // Create and add transport
-      this.transports.push(createTerminalTransport(transportConfiguration));
-    } else if (transportConfiguration.type === 'file') {
-      // Create and add transport
-      this.transports.push(createFileTransport(transportConfiguration));
+  devLog('Creating transports.');
+  const transports = [];
+  configurations.map(configuration => {
+    if (configuration.type === 'terminal') {
+      // Create and add transport.
+      transports.push(createTerminalTransport(configuration));
+    } else if (configuration.type === 'file') {
+      // Create and add transport.
+      transports.push(createFileTransport(configuration));
     }
   });
+  devLog('Transports created.'); ////////////////////////////////////////////////////////////////////////////////
 
-  function parseJson(jsonString) {
-    try {
-      return JSON.parse(jsonString);
-    } catch (error) {
-      if (error.message.includes('no such file or directory')) {
-        // File not found
-        const filePath = error.message.split("'")[1];
-        log.error(`No such file: ${filePath}`);
-      } else if (error.message.includes('JSON') && error.message.includes('position')) {
-        // Incorrect JSON
-        const unexpectedToken = error.message.split(' ')[2]; // Display where the error is in the JSON file
+  devLog('Creating log instance.');
+  const log = {
+    error: (...messages) => {
+      error(transports, messages);
+    },
+    warn: (...messages) => {
+      warn(transports, messages);
+    },
+    info: (...messages) => {
+      info(transports, messages);
+    },
+    debug: (...messages) => {
+      debug(transports, messages);
+    },
+    trace: (...messages) => {
+      trace(transports, messages);
+    },
+    _configurations: configurations
+  };
+  devLog('Log instance created.'); ////////////////////////////////////////////////////////////////////////////////
 
-        const rows = jsonString.split('\n');
-        const lineNumber = error.message.split('position ')[1];
-        let total = 0;
-        let isFirst = true;
-
-        for (let i = 0; i < rows.length; i += 1) {
-          if (!isFirst) {
-            total += 1;
-          } else {
-            isFirst = false;
-          }
-
-          if (total + rows[i].length <= lineNumber) {
-            // Not this line, next
-            total += rows[i].length;
-          } else {
-            // This line
-            const arrow = new Array(lineNumber - total + 1).join(' ') + '^   line: ' + (i + 1) + ' char: ' + (lineNumber - total + 1) + ' unexpected token: ' + unexpectedToken;
-            log.error(`Wrongly formatted JSON file
-    ${rows[i]}
-    ${arrow}`);
-            break;
-          }
-        }
-      }
-
-      throw error;
-    }
-  }
-
-  function getJson(jsonOrPath) {
-    if (jsonOrPath.constructor.name === 'String') {
-      let absolutePath;
-
-      if (jsonOrPath.charAt(0) === '/' || jsonOrPath.charAt(1) === ':') {
-        // Linux or Windows absolute string
-        absolutePath = jsonOrPath;
-      } else {
-        // Linux/Windows Realtive path
-        absolutePath = path.join(__dirname, jsonOrPath);
-      } // Path
+  return log;
+} ////////////////////////////////////////////////////////////////////////////////
 
 
-      let jsonString;
-
-      try {
-        jsonString = fs.readFileSync(absolutePath, 'utf8');
-        return parseJson(jsonString);
-      } catch (error) {
-        if (error.message.includes('no such file or directory')) {
-          // File not found
-          const filePath = error.message.split("'")[1];
-          log.error(`No such file: ${filePath}`);
-        }
-
-        throw error;
-      }
-    } else {
-      // Object
-      return jsonOrPath;
-    }
-  }
+function error(transports, ...messages) {
+  const date = new Date();
+  transports.forEach(func => func(date, 'ERROR', messages));
 }
 
-Log.prototype.error = function (...messages) {
+function warn(transports, ...messages) {
   const date = new Date();
-  this.transports.forEach(func => func(date, 'ERROR', messages));
-};
+  transports.forEach(func => func(date, ' WARN', messages));
+}
 
-Log.prototype.warn = function (...messages) {
+function info(transports, ...messages) {
   const date = new Date();
-  this.transports.forEach(func => func(date, ' WARN', messages));
-};
+  transports.forEach(func => func(date, ' INFO', messages));
+}
 
-Log.prototype.info = function (...messages) {
+function debug(transports, ...messages) {
   const date = new Date();
-  this.transports.forEach(func => func(date, ' INFO', messages));
-};
+  transports.forEach(func => func(date, 'DEBUG', messages));
+}
 
-Log.prototype.debug = function (...messages) {
+function trace(transports, ...messages) {
   const date = new Date();
-  this.transports.forEach(func => func(date, 'DEBUG', messages));
-};
+  transports.forEach(func => func(date, 'TRACE', messages));
+} ////////////////////////////////////////////////////////////////////////////////
 
-Log.prototype.trace = function (...messages) {
-  const date = new Date();
-  this.transports.forEach(func => func(date, 'TRACE', messages));
-};
 
-module.exports = Log;
+var _default = create;
+exports.default = _default;

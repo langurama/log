@@ -20,9 +20,9 @@
         "style_fix": "npx prettier --write \"./**/*.js\" --write \"./**/*.json\"",
         "test": "npx jest",
         "build": "npx babel ./source/ -d ./distributable/",
-        "start_dev": "node --nolazy --inspect=9229 ./distributable/ --dev",
         "dev": "nodemon",
-        "example": "npx babel-node -- ./example/index.js"
+        "start": "npx babel-node -- ./example/index.js",
+        "start_dev": "npx babel-node -- ./example/index.js --dev"
     },
     "engines": {
         "node": "12"

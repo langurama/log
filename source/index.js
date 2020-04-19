@@ -15,13 +15,12 @@ const isDev = process.argv.reduce(function(value, argument) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function LogError(message) {
-    Error.call(this, message);
-    Error.captureStackTrace(this, arguments.callee);
-    this.name = 'LogError';
-    this.message = message;
+// Used for debugging this package.
+function devLog(...messages) {
+    if (isDev) {
+        console.log('[@basickarl/log]', ...messages);
+    }
 }
-LogError.prototype.__proto__ = Error.prototype;
 
 function createLogsDirectory(logsDirPath) {
     if (!fs.existsSync(logsDirPath)) {
@@ -68,7 +67,7 @@ function getTimestamp(date) {
     return timestamp;
 }
 
-function formatMessages(...messages) {
+function formatMessages(chalk, ...messages) {
     const message = messages.reduce((message, argument) => {
         let newMessage;
 
@@ -91,7 +90,17 @@ function formatMessages(...messages) {
         } else if (argument.constructor === Boolean) {
             newMessage += argument.toString();
         } else if (argument.constructor === Error) {
-            newMessage += argument.stack;
+            if (chalk !== undefined) {
+                newMessage += argument.stack
+                    .split('\n')
+                    .map(line => {
+                        if (line.indexOf('(internal/modules') === -1) return chalk.red(line);
+                        return chalk.grey(line);
+                    })
+                    .join('\n');
+            } else {
+                newMessage += argument.stack;
+            }
         } else if (argument.constructor === Object) {
             newMessage += JSON.stringify(argument, null, 4);
         } else {
@@ -104,57 +113,110 @@ function formatMessages(...messages) {
     return message;
 }
 
-function getCallee() {
-    // prettier-ignore
-    return new Error().stack.split('\n')[6].split('(')[1].split(')')[0];
+function getCallee(chalk) {
+    const stack = new Error().stack
+        .split('\n')[7]
+        .split('(')[1]
+        .split(')')[0];
+    if (chalk !== undefined) return chalk.grey(stack);
+    return stack;
 }
 
 function createTerminalTransport(configuration) {
     const shouldIncludeCallee = configuration.callee;
-    const shouldUseColor = configuration.color !== undefined;
+    const shouldUseChalk = configuration.chalk !== undefined;
 
     return function terminalTransport(date, level, messages) {
+        devLog('Terminal transport:', date, level, messages);
+
         const timestamp = getTimestamp(date);
 
-        const string = shouldIncludeCallee
-            ? `${formatMessages(messages)} ${getCallee()}`
-            : formatMessages(messages);
+        devLog('Terminal should use chalk:', shouldUseChalk);
 
         if (level === 'ERROR') {
-            const log = shouldUseColor
-                ? `${configuration.color.grey(timestamp)}  ${configuration.color.bgBlack(
-                      configuration.color.bgRed.white(configuration.color.bold(level))
-                  )} ${string}`
-                : `${timestamp}  ${level} ${string}`;
-            isBrowser ? console.error(log) : process.stderr.write(log + '\n');
+            devLog('Terminal ERROR hit.');
+            const timestampAndLevel = shouldUseChalk
+                ? `${configuration.chalk.grey(timestamp)}  ${configuration.chalk.bgBlack(
+                      configuration.chalk.bgRed.white(configuration.chalk.bold(level))
+                  )}`
+                : `${timestamp}  ${level}`;
+            isBrowser
+                ? console.error(
+                      `${timestampAndLevel}`,
+                      ...messages,
+                      shouldIncludeCallee ? getCallee(configuration.chalk) : ''
+                  )
+                : process.stderr.write(
+                      `${timestampAndLevel} ${formatMessages(configuration.chalk, ...messages)} ${
+                          shouldIncludeCallee ? getCallee(configuration.chalk) : '' + '\n'
+                      }` + '\n'
+                  );
         } else if (level === 'WARN') {
-            const log = shouldUseColor
-                ? `${configuration.color.grey(timestamp)}   ${configuration.color.bgYellow(
-                      configuration.color.black(configuration.color.bold(level))
-                  )} ${string}`
-                : `${timestamp}  ${level} ${string}`;
-            isBrowser ? console.warn(log) : process.stderr.write(log) + '\n';
+            devLog('Terminal WARN hit.');
+            const timestampAndLevel = shouldUseChalk
+                ? `${configuration.chalk.grey(timestamp)}   ${configuration.chalk.bgYellow(
+                      configuration.chalk.bgYellow.black(configuration.chalk.bold(level))
+                  )}`
+                : `${timestamp}  ${level}`;
+            isBrowser
+                ? console.warn(
+                      `${timestampAndLevel}`,
+                      ...messages,
+                      shouldIncludeCallee ? getCallee(configuration.chalk) : ''
+                  )
+                : process.stderr.write(
+                      `${timestampAndLevel} ${formatMessages(configuration.chalk, ...messages)} ${
+                          shouldIncludeCallee ? getCallee(configuration.chalk) : '' + '\n'
+                      }` + '\n'
+                  );
         } else if (level === 'INFO') {
-            const log = shouldUseColor
-                ? `${configuration.color.grey(timestamp)}   ${configuration.color.white(
-                      configuration.color.bold(level)
-                  )} ${string}`
-                : `${timestamp}  ${level} ${string}`;
-            isBrowser ? console.info(log) : process.stdout.write(log + '\n');
+            devLog('Terminal INFO hit.');
+            const timestampAndLevel = shouldUseChalk
+                ? `${configuration.chalk.grey(timestamp)}   ${configuration.chalk.white(level)}`
+                : `${timestamp}  ${level}`;
+            isBrowser
+                ? console.info(
+                      `${timestampAndLevel}`,
+                      ...messages,
+                      shouldIncludeCallee ? getCallee(configuration.chalk) : ''
+                  )
+                : process.stdout.write(
+                      `${timestampAndLevel} ${formatMessages(configuration.chalk, ...messages)} ${
+                          shouldIncludeCallee ? getCallee(configuration.chalk) : '' + '\n'
+                      }` + '\n'
+                  );
         } else if (level === 'DEBUG') {
-            const log = shouldUseColor
-                ? `${configuration.color.grey(timestamp)}  ${configuration.color.cyan(
-                      level
-                  )} ${string}`
-                : `${timestamp}  ${level} ${string}`;
-            isBrowser ? console.debug(log) : process.stdout.write(log + '\n');
+            devLog('Terminal DEBUG hit.');
+            const timestampAndLevel = shouldUseChalk
+                ? `${configuration.chalk.grey(timestamp)}  ${configuration.chalk.cyan(level)}`
+                : `${timestamp}  ${level}`;
+            isBrowser
+                ? console.debug(
+                      `${timestampAndLevel}`,
+                      ...messages,
+                      shouldIncludeCallee ? getCallee(configuration.chalk) : ''
+                  )
+                : process.stdout.write(
+                      `${timestampAndLevel} ${formatMessages(configuration.chalk, ...messages)} ${
+                          shouldIncludeCallee ? getCallee(configuration.chalk) : '' + '\n'
+                      }` + '\n'
+                  );
         } else if (level === 'TRACE') {
-            const log = shouldUseColor
-                ? `${configuration.color.grey(timestamp)}  ${configuration.color.green(
-                      level
-                  )} ${string}`
-                : `${timestamp}  ${level} ${string}`;
-            isBrowser ? console.trace(log) : process.stdout.write(log + '\n');
+            devLog('Terminal TRACE hit.');
+            const timestampAndLevel = shouldUseChalk
+                ? `${configuration.chalk.grey(timestamp)}  ${configuration.chalk.green(level)}`
+                : `${timestamp}  ${level}`;
+            isBrowser
+                ? console.trace(
+                      `${timestampAndLevel}`,
+                      ...messages,
+                      shouldIncludeCallee ? getCallee(configuration.chalk) : ''
+                  )
+                : process.stdout.write(
+                      `${timestampAndLevel} ${formatMessages(configuration.chalk, ...messages)} ${
+                          shouldIncludeCallee ? getCallee(configuration.chalk) : '' + '\n'
+                      }` + '\n'
+                  );
         }
         return;
     };
@@ -203,34 +265,6 @@ function createFileTransport(configuration) {
     };
 }
 
-/* 
-
-const log = createLog([
-    {
-        type: 'file',
-        path: './test/_logs/info_level.log',
-        callee: false,
-        level: 'INFO',
-        verbose: true
-    },
-    {
-        type: 'file',
-        path: './test/_logs/error_level.log',
-        level: 'ERROR',
-        json: true
-    },
-    {
-        type: 'terminal',
-        level: 'info'
-    }
-]);
-
-const log = createLog({
-    type: 'terminal',
-    level: 'info'
-});
-*/
-
 export const defaultTerminalConfiguration = {
     type: 'terminal',
     level: 'info',
@@ -271,18 +305,6 @@ function validateConfiguration(userConfiguration) {
         );
     }
 
-    // Validate if the object has incorrect properties.
-    // const incorrectProperties = Object.keys(userConfiguration).filter(key => {
-    //     if (isTerminalConfiguration) {
-    //         const propertyExistsOnType = defaultTerminalConfiguration[key] !== undefined;
-    //         if (!propertyExistsOnType) return true;
-    //     } else {
-    //         const propertyExistsOnType = defaultFileConfiguration[key] !== undefined;
-    //         if (!propertyExistsOnType) return true;
-    //     }
-    //     return false;
-    // });
-    // Validate if the object has incorrect properties.
     const defaultTerminalConfigurationKeys = Object.keys(defaultTerminalConfiguration);
     const defaultFileConfigurationKeys = Object.keys(defaultFileConfiguration);
     const incorrectProperties = Object.keys(userConfiguration).filter(key => {
@@ -297,23 +319,22 @@ function validateConfiguration(userConfiguration) {
         throw new Error('Configuration value "level" must be of type "string".');
     if (userConfiguration.callee && typeof userConfiguration.callee !== 'boolean')
         throw new Error('Configuration value "callee" must be of type "boolean".');
-    // if (userConfiguration.chalk) {
-    //     throw new Error('Configuration value "chalk" must be of instance "chalk".');
-    // }
     if (userConfiguration.json && typeof userConfiguration.json !== 'boolean')
         throw new Error('Configuration value "json" must be of type "boolean".');
-}
 
-// Used for debugging this package.
-function devLog(messages) {
-    if (isDev) {
-        console.log('[@basickarl/log] ' + messages.toString() + '\n');
+    // If chalk is defined make sure it's of correct type.
+    const chalkIsNotUndefinedButIsIncorrect =
+        userConfiguration.chalk !== undefined &&
+        (userConfiguration.chalk.constructor !== undefined &&
+            userConfiguration.chalk.constructor.name !== 'Chalk');
+    if (chalkIsNotUndefinedButIsIncorrect) {
+        throw new Error('Configuration value for property "chalk" must be of instance "Chalk".');
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export function create(userConfigurationOrConfigurations) {
+export default function create(userConfigurationOrConfigurations) {
     devLog('Recieved user configuration or configurations:', userConfigurationOrConfigurations);
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -359,16 +380,17 @@ export function create(userConfigurationOrConfigurations) {
                 );
 
             // Complete.
-            return { ...configuration, ...defaultTerminalConfiguration };
+            return { ...defaultTerminalConfiguration, ...configuration };
         } else {
             // Complete.
-            return { ...configuration, ...defaultFileConfiguration };
+            return { ...defaultFileConfiguration, ...configuration };
         }
     });
 
-    // Throw error if there are too many.
-
-    devLog('User configuration has been validated.');
+    devLog(
+        'User configuration has been validated. Configurations:',
+        JSON.stringify(configurations)
+    );
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -383,7 +405,7 @@ export function create(userConfigurationOrConfigurations) {
             transports.push(createFileTransport(configuration));
         }
     });
-    devLog('Transports created.');
+    devLog(`Transports created. Amount of transports: ${transports.length}`);
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -415,27 +437,28 @@ export function create(userConfigurationOrConfigurations) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function error(transports, ...messages) {
+function error(transports, messages) {
+    devLog('error messages:', messages);
     const date = new Date();
     transports.forEach(func => func(date, 'ERROR', messages));
 }
-function warn(transports, ...messages) {
+function warn(transports, messages) {
+    devLog('warn messages:', messages);
     const date = new Date();
-    transports.forEach(func => func(date, ' WARN', messages));
+    transports.forEach(func => func(date, 'WARN', messages));
 }
-function info(transports, ...messages) {
+function info(transports, messages) {
+    devLog('info messages:', messages);
     const date = new Date();
-    transports.forEach(func => func(date, ' INFO', messages));
+    transports.forEach(func => func(date, 'INFO', messages));
 }
-function debug(transports, ...messages) {
+function debug(transports, messages) {
+    devLog('debug messages:', messages);
     const date = new Date();
     transports.forEach(func => func(date, 'DEBUG', messages));
 }
-function trace(transports, ...messages) {
+function trace(transports, messages) {
+    devLog('trace messages:', messages);
     const date = new Date();
     transports.forEach(func => func(date, 'TRACE', messages));
 }
-
-////////////////////////////////////////////////////////////////////////////////
-
-export default create;

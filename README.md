@@ -60,3 +60,31 @@ Will result in the following:
 2017-11-07 15:43:39 UTC+1  DEBUG k.
 2017-11-07 15:43:39 UTC+1  TRACE Yea you get the picture
 ```
+
+/\*
+
+const log = createLog([
+{
+type: 'file',
+path: './test/_logs/info_level.log',
+callee: false,
+level: 'INFO',
+verbose: true
+},
+{
+type: 'file',
+path: './test/_logs/error_level.log',
+level: 'ERROR',
+json: true
+},
+{
+type: 'terminal',
+level: 'info'
+}
+]);
+
+const log = createLog({
+type: 'terminal',
+level: 'info'
+});
+\*/
