@@ -78,17 +78,37 @@ function formatMessages(chalk, ...messages) {
         }
 
         if (argument === undefined) {
-            newMessage += undefined;
+            if (chalk !== undefined) {
+                newMessage += chalk.blue('undefined');
+            } else {
+                newMessage += 'undefined';
+            }
         } else if (argument === null) {
-            newMessage += argument;
+            if (chalk !== undefined) {
+                newMessage += chalk.blue('null');
+            } else {
+                newMessage += 'null';
+            }
         } else if (argument.constructor === Array) {
-            newMessage += argument.toString();
+            if (chalk !== undefined) {
+                newMessage += chalk.green(argument.toString());
+            } else {
+                newMessage += argument.toString();
+            }
         } else if (argument.constructor === String) {
             newMessage += argument;
         } else if (argument.constructor === Number) {
-            newMessage += argument.toString();
+            if (chalk !== undefined) {
+                newMessage += chalk.green(argument.toString());
+            } else {
+                newMessage += argument.toString();
+            }
         } else if (argument.constructor === Boolean) {
-            newMessage += argument.toString();
+            if (chalk !== undefined) {
+                newMessage += chalk.yellow(argument.toString());
+            } else {
+                newMessage += argument.toString();
+            }
         } else if (argument.constructor === Error) {
             if (chalk !== undefined) {
                 newMessage += argument.stack
