@@ -6,3 +6,4 @@ log/
 node_modules/
 application.log
 test.log
+langurama-log-*.tgz
