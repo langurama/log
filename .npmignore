@@ -1,0 +1,15 @@
+!node_modules/
+.github/
+.vscode/
+example/
+log/
+source/
+test/
+.eslintignore
+.eslintrc.json
+.gitignore
+.nvmrc
+.prettierignore
+.prettierrc
+babel.config.json
+nodemon.json
