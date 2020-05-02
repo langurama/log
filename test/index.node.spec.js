@@ -13,14 +13,6 @@ import { default as spies } from 'chai-spies';
 import { default as readline } from 'readline';
 import { v4 as uuidv4 } from 'uuid';
 import { default as chalk } from 'chalk';
-import {
-    mockedRun,
-    MockedRunResult,
-    mockProcessStdout,
-    mockProcessStderr,
-    mockConsoleLog,
-    mockProcessExit
-} from 'jest-mock-process';
 
 // Local modules.
 import {
@@ -84,6 +76,15 @@ function createFileLog(filePath) {
         ...defaultFileConfiguration,
         callee: false,
         path: filePath
+    });
+}
+
+function getMockedRun() {
+    return mockedRun({
+        stdout: mockProcessStdout,
+        stderr: mockProcessStderr,
+        exit: mockProcessExit,
+        log: mockConsoleLog
     });
 }
 
@@ -309,131 +310,178 @@ describe('Node', () => {
         });
     });
     describe('Functionality', () => {
-        it.only('-', () => {
-            const mockRun = mockedRun({
-                stdout: mockProcessStdout,
-                stderr: mockProcessStderr,
-                exit: mockProcessExit,
-                log: mockConsoleLog
-            });
-            const mocks = mockRun(() => {
-                process.stdout.write('stdout payload');
-                process.stderr.write('stderr payload');
-                process.exit(-1);
-                console.log('log payload');
-            });
-            expect(mocks.stdout).toHaveBeenCalledTimes(1);
-            expect(mocks.log).toHaveBeenCalledWith('log payload');
-        });
-        it('should write all stdout log levels to stdout when using terminal transport', done => {
+        it('should write all stdout log levels to stdout when using terminal transport', () => {
             // Setup.
             const uuid = uuidv4();
-            const logMessages = [
-                [undefined, `${uuid}_ni`],
-                [undefined, `${uuid}_nd`],
-                [undefined, `${uuid}_nt`],
-                [undefined, `${uuid}_ei`],
-                [undefined, `${uuid}_ed`],
-                [undefined, `${uuid}_et`],
-                [`${uuid}_cd`, '[36mDEBUG[39m'],
-                [`${uuid}_ct`, '[32mTRACE[39m'],
-                [[`${uuid}_ci1`, 'string'], '[37mINFO[39m'],
-                [[`${uuid}_ci2`, true], '[37mINFO[39m'],
-                [[`${uuid}_ci3`, 1], '[37mINFO[39m'],
-                [[`${uuid}_ci4`, [1, 2]], '[37mINFO[39m'],
-                [[`${uuid}_ci5`, undefined], '[37mINFO[39m'],
-                [[`${uuid}_ci6`, null], '[37mINFO[39m'],
-                [[`${uuid}_ci7`, { herro: 'herro' }], '[37mINFO[39m'],
-                [[`${uuid}_ci8`, Symbol(666)], '[37mINFO[39m'],
-                [[`${uuid}_ci9`, new Error('help')], '[37mINFO[39m'],
-                [undefined, `${uuid}_lt`]
-            ];
+            const messages = [`${uuid}_info`, `${uuid}_debug`, `${uuid}_trace`];
             const log = languramaLog({ ...defaultTerminalConfiguration, level: 'trace' });
-            const logChalk = languramaLog({
-                ...defaultTerminalConfiguration,
-                level: 'trace',
-                chalk
-            });
-            const logNoCallee = languramaLog({
+            const mock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+            // Test.
+            log.info(messages[0]);
+            log.debug(messages[1]);
+            log.trace(messages[2]);
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(3);
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[0]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[2]));
+        });
+        it('should write all stderr log levels to stderr when using terminal transport', () => {
+            // Setup.
+            const uuid = uuidv4();
+            const messages = [`${uuid}_error`, `${uuid}_warn`];
+            const log = languramaLog();
+            const mock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {});
+            // Test.
+            log.error(messages[0]);
+            log.warn(messages[1]);
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(2);
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[0]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[1]));
+        });
+        it('should display stdout logs in color when using chalk', () => {
+            // Setup.
+            const uuid = uuidv4();
+            const messages = [
+                [`${uuid}_chalk_info`, /\[37mINFO\[39m/],
+                [`${uuid}_chalk_debug`, /\[36mDEBUG\[39m/],
+                [`${uuid}_chalk_trace`, /\[32mTRACE\[39m/]
+            ];
+
+            const log = languramaLog({ ...defaultTerminalConfiguration, level: 'trace', chalk });
+            const mock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+            // Test.
+            log.info(messages[0][0]);
+            log.debug(messages[1][0]);
+            log.trace(messages[2][0]);
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(3);
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[0][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[1][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[2][1]));
+        });
+        it('should handle multiple messages given', () => {
+            // Setup.
+            const messages = [['first', 'second'], /first second/];
+            const log = languramaLog();
+            const mock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+            // Test.
+            log.info(...messages[0]);
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(1);
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[1]));
+        });
+        it('should display stderr logs in color when using chalk', () => {
+            // Setup.
+            const uuid = uuidv4();
+            const messages = [
+                [`${uuid}_chalk_error`, /\[40m\[41m\[37m\[1mERROR\[22m\[39m\[40m\[49m/],
+                [`${uuid}_chalk_warn`, /\[43m\[43m\[30m\[1mWARN\[22m\[39m\[43m\[49m/]
+            ];
+
+            const log = languramaLog({ ...defaultTerminalConfiguration, chalk });
+            const mock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {});
+            // Test.
+            log.error(messages[0][0]);
+            log.warn(messages[1][0]);
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(2);
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[0][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[1][1]));
+        });
+        it('should display all types in color when using chalk', () => {
+            // Setup.
+            const uuid = uuidv4();
+            const messages = [
+                ['string', / string /],
+                [true, /\[33mtrue\[39m/],
+                [1, /\[32m1\[39m/],
+                [[1, 2], /\[32m[1,2]\[39m/],
+                [undefined, /\[34mundefined\[39m/],
+                [null, /\[34mnull\[39m/],
+                [{ herro: 'herro' }, /"herro": "herro"\n/],
+                [Symbol(666), / Symbol\(666\) /],
+                [new Error('help'), /\[90mError: help\[39m/]
+            ];
+
+            const log = languramaLog({ ...defaultTerminalConfiguration, level: 'trace', chalk });
+            const mock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+            // Test.
+            log.info(messages[0][0]);
+            log.info(messages[1][0]);
+            log.info(messages[2][0]);
+            log.info(messages[3][0]);
+            log.info(messages[4][0]);
+            log.info(messages[5][0]);
+            log.info(messages[6][0]);
+            log.info(messages[7][0]);
+            log.info(messages[8][0]);
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(9);
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[0][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[1][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[2][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[3][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[4][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[5][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[6][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[7][1]));
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(messages[8][1]));
+        });
+        it('should not display callee in stdout', () => {
+            // Setup.
+            const log = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'trace',
                 callee: false
             });
-            const logTooLowLogLevel = languramaLog();
-            // Assert.
-            let messageNumber = 0;
-            chai.spy.on(process.stdout, 'write', function(item) {
-                if (item.includes(`${uuid}_`)) {
-                    const messageExists = item.includes(logMessages[messageNumber][1]);
-                    if (!messageExists) done('Not correct, did not find message.');
-                    messageNumber += 1;
-                    if (messageNumber === logMessages.length - 1) done();
-                    // Timeout means the required amount of messages to be read was not hit.
-                }
-            });
+            const mock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
             // Test.
-            log.info(logMessages[0][1]);
-            log.debug(logMessages[1][1]);
-            log.trace(logMessages[2][1]);
-            logNoCallee.info(logMessages[3][1]);
-            logNoCallee.debug(logMessages[4][1]);
-            logNoCallee.trace(logMessages[5][1]);
-            logChalk.debug(logMessages[6][0]);
-            logChalk.trace(logMessages[7][0]);
-            logChalk.info(...logMessages[8][0]);
-            logChalk.info(...logMessages[9][0]);
-            logChalk.info(...logMessages[10][0]);
-            logChalk.info(...logMessages[11][0]);
-            logChalk.info(...logMessages[12][0]);
-            logChalk.info(...logMessages[13][0]);
-            logChalk.info(...logMessages[14][0]);
-            logChalk.info(...logMessages[15][0]);
-            logChalk.info(...logMessages[16][0]);
-            logTooLowLogLevel.trace(logMessages[17][1]); // Should not be counted in Assert.
+            log.info(null);
+            log.debug(null);
+            log.trace(null);
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(3);
+            expect(mock).not.toHaveBeenCalledWith(
+                jasmine.stringMatching(/log\/test\/index.node.spec.js/)
+            );
         });
-        it('should write all stderr log levels to stderr when using terminal transport', done => {
+        it('should not display callee in stderr', () => {
             // Setup.
-            const uuid = uuidv4();
-            const logMessages = [
-                [undefined, `${uuid}_ne`],
-                [undefined, `${uuid}_nw`],
-                [undefined, `${uuid}_ee`],
-                [undefined, `${uuid}_ew`],
-                [`${uuid}_cw`, '[43m[43m[30m[1mWARN[22m[39m[43m[49m'],
-                [[`${uuid}_ce`, new Error('herro')], '[40m[41m[37m[1mERROR[22m[39m[40m[49m']
-            ];
-            const log = languramaLog(defaultTerminalConfiguration);
-            const logChalk = languramaLog({ ...defaultTerminalConfiguration, chalk });
-            const logNoCallee = languramaLog({ ...defaultTerminalConfiguration, callee: false });
-            // Assert.
-            let messageNumber = 0;
-            chai.spy.on(process.stderr, 'write', function(item) {
-                if (item.includes(`${uuid}_`)) {
-                    const messageExists = item.includes(logMessages[messageNumber][1]);
-                    if (!messageExists) done('Not correct, did not find message.');
-                    messageNumber += 1;
-                    if (messageNumber === logMessages.length) done();
-                    // Timeout means the required amount of messages to be read was not hit.
-                }
+            const log = languramaLog({
+                ...defaultTerminalConfiguration,
+                callee: false
             });
+            const mock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {});
             // Test.
-            log.error(logMessages[0][1]);
-            log.warn(logMessages[1][1]);
-            logNoCallee.error(logMessages[2][1]);
-            logNoCallee.warn(logMessages[3][1]);
-            logChalk.warn(logMessages[4][0]);
-            logChalk.error(...logMessages[5][0]);
+            log.error(null);
+            log.warn(null);
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(2);
+            expect(mock).not.toHaveBeenCalledWith(
+                jasmine.stringMatching(/log\/test\/index.node.spec.js/)
+            );
+        });
+        it('should not display low level log in terminal when log level is set too high', () => {
+            // Setup.
+            const log = languramaLog();
+            const mock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
+            // Test.
+            log.trace('');
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(0);
         });
         it('should write all log levels to a file when using file transport with absolute path', done => {
             // Setup.
             const uuid = uuidv4();
             const logMessages = [
-                `${uuid}_e`,
-                `${uuid}_w`,
-                `${uuid}_i`,
-                `${uuid}_d`,
-                `${uuid}_t`,
-                `${uuid}_lt`
+                `${uuid}_error`,
+                `${uuid}_warn`,
+                `${uuid}_info`,
+                `${uuid}_debug`,
+                `${uuid}_trace`,
+                `${uuid}_low_trace`
             ];
             const filePath = getUniqueAbsoluteFilePath();
             const log = languramaLog({
@@ -721,9 +769,13 @@ describe('Node', () => {
             assert.strictEqual(actualResultLineCount, expectedResultLineCount);
         });
     });
-});
 
-afterAll(() => {
-    // Teardown.
-    if (fs.existsSync(testLogDir)) fs.rmdirSync(testLogDir, { recursive: true });
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    afterAll(() => {
+        // Teardown.
+        if (fs.existsSync(testLogDir)) fs.rmdirSync(testLogDir, { recursive: true });
+    });
 });
