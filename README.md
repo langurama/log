@@ -1,90 +1,156 @@
 Due to the retardedness of some of the libraries not providing a _simple_ human readable logging library, which can log to file and stdout, I had to tell someone to hold my beer so I could.
 
-```
-const retardlog = require('log');
+# Install
 
-const log = retardlog.create([
+`npm install --save-prod --save-exact @basickarl/log`
+
+<a name="configuration"></a>
+
+# Configuration
+
+Terminal transport works in both Node.js and the browser.
+File transport works only in Node.js.
+
+Terminal transport:
+
+<a name="terminal"></a>
+
+## Terminal
+
+-   <a href="#create"><code>mqtt.<b>create()</b></code></a>
+
+<a name="create"></a>
+
+# \<BasickarlLog\>
+
+## create(configuration)
+
+-   configuration **\<Configuration\> | <Configuration[]>** Default: TerminalConfiguration
+    -   Configuration **<TerminalConfiguration | FileConfiguration>**
+        -   TerminalConfiguration **\<Object\>** _Only one per log instance._
+            -   type **\<string\>** Valid values: [terminal] **Required**
+            -   level **\<string\>** Valid values: [error, warn, info, debug, trace] _Default: info_
+            -   callee **\<boolean\>** _Default: true_
+            -   chalk **\<Chalk\>** _Display logs in terminal in color using the Chalk module instance._
+        -   FileConfiguration **\<Object\>**
+            -   type **\<string\>** Valid values: [file] **Required**
+            -   level **\<string\>** Valid values: [error, warn, info, debug, trace] _Default: info_
+            -   path **\<string\>** _Path where log should be written to._ _Default: ./application.log_
+            -   json **\<boolean\>** _Write to log file in JSON format._ _Default: false_
+-   Returns: **\<Log\>**
+
+# \<Log\>
+
+## error([...messages])
+
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stderr._
+
+## warn([...message])
+
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stderr._
+
+## info([...message])
+
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stdout._
+
+## debug([...message])
+
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stdout._
+
+## trace([...message])
+
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stdout._
+
+# Example
+
+You may check the `example/` directory for an runnable example file.
+
+```
+import { default as basickarlLog } from 'log';
+import { default as chalk } from 'chalk'; // If you want to have colors in the terminal.
+
+const log = basickarlLog.create([
     {
         type: 'file',
-        path: 'logs/foo2.log',
+        path: 'log/foo2.log',
         callee: false,
-        level: 'info'
+        level: 'error'
     },
     {
         type: 'file',
-        path: 'logs/foo1.log',
-        level: 'error',
+        path: 'log/foo1.log',
+        level: 'warn',
         json: true
     },
     {
         type: 'terminal',
-        useStdErr: true
+        level: 'debug',
+        callee: true,
+        chalk
     }
 ]);
 
 log.info('herro', 1, 3.4, null, undefined, [1, 9], new Error('crap'), true, { wtf: 'k' });
 log.error(new Error('F*ck'));
-log.warn('This is a warning');
-log.info('God');
+log.warn('This is a warning.');
+log.info('God.');
 log.debug('k.');
-log.trace('Yea you get the picture');
+log.trace('This will not be displayed.');
 ```
 
-Will result in the following:
+Will result in the following.
+
+Terminal:
 
 ```
-2017-11-09 13:36:56 UTC+1  INFO herro 1 3.4 null undefined 1,9 Error: crap
-    at Object.<anonymous> (/Users/karl/dev/retardlog/index.js:152:11)
-    at Module._compile (module.js:641:30)
-    at Object.Module._extensions..js (module.js:652:10)
-    at Module.load (module.js:560:32)
-    at tryModuleLoad (module.js:503:12)
-    at Function.Module._load (module.js:495:3)
-    at Function.Module.runMain (module.js:682:10)
-    at startup (bootstrap_node.js:191:16)
-    at bootstrap_node.js:613:3 true {
+2020-05-02 15:24:27 UTC+2   INFO herro 1 3.4 null undefined [1,9] Error: crap
+    at Object.<anonymous> (/home/karl/dev/log/example/index.js:73:52)
+    at Module._compile (internal/modules/cjs/loader.js:955:30)
+    at Module._compile (/home/karl/dev/log/node_modules/pirates/lib/index.js:99:24)
+    at Module._extensions..js (internal/modules/cjs/loader.js:991:10)
+    at Object.newLoader [as .js] (/home/karl/dev/log/node_modules/pirates/lib/index.js:104:7)
+    at Module.load (internal/modules/cjs/loader.js:811:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:723:14)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:1043:10)
+    at Object.<anonymous> (/home/karl/dev/log/node_modules/@babel/node/lib/_babel-node.js:180:21)
+    at Module._compile (internal/modules/cjs/loader.js:955:30) true {
     "wtf": "k"
-}
-2017-11-07 15:43:39 UTC+1  ERROR Error: F*ck
-    at Object.<anonymous> (/Users/karl/dev/retardlog/index.js:153:11)
-    at Module._compile (module.js:641:30)
-    at Object.Module._extensions..js (module.js:652:10)
-    at Module.load (module.js:560:32)
-    at tryModuleLoad (module.js:503:12)
-    at Function.Module._load (module.js:495:3)
-    at Function.Module.runMain (module.js:682:10)
-    at startup (bootstrap_node.js:191:16)
-    at bootstrap_node.js:613:3
-2017-11-07 15:43:39 UTC+1   WARN This is a warning
-2017-11-07 15:43:39 UTC+1   INFO God
-2017-11-07 15:43:39 UTC+1  DEBUG k.
-2017-11-07 15:43:39 UTC+1  TRACE Yea you get the picture
+} /home/karl/dev/log/example/index.js:73:5
+2020-05-02 15:24:27 UTC+2  ERROR Error: F*ck
+    at Object.<anonymous> (/home/karl/dev/log/example/index.js:74:11)
+    at Module._compile (internal/modules/cjs/loader.js:955:30)
+    at Module._compile (/home/karl/dev/log/node_modules/pirates/lib/index.js:99:24)
+    at Module._extensions..js (internal/modules/cjs/loader.js:991:10)
+    at Object.newLoader [as .js] (/home/karl/dev/log/node_modules/pirates/lib/index.js:104:7)
+    at Module.load (internal/modules/cjs/loader.js:811:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:723:14)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:1043:10)
+    at Object.<anonymous> (/home/karl/dev/log/node_modules/@babel/node/lib/_babel-node.js:180:21)
+    at Module._compile (internal/modules/cjs/loader.js:955:30) /home/karl/dev/log/example/index.js:74:5
+2020-05-02 15:24:27 UTC+2   WARN This is a warning. /home/karl/dev/log/example/index.js:75:5
+2020-05-02 15:24:27 UTC+2   INFO God. /home/karl/dev/log/example/index.js:76:5
+2020-05-02 15:24:27 UTC+2  DEBUG k. /home/karl/dev/log/example/index.js:77:5
 ```
 
-/\*
+File `log/foo1.log`:
 
-const log = createLog([
-{
-type: 'file',
-path: './test/_logs/info_level.log',
-callee: false,
-level: 'INFO',
-verbose: true
-},
-{
-type: 'file',
-path: './test/_logs/error_level.log',
-level: 'ERROR',
-json: true
-},
-{
-type: 'terminal',
-level: 'info'
-}
-]);
+```
+2020-05-02 15:56:39 UTC+2 ERROR Error: F*ck
+    at Object.<anonymous> (/home/karl/dev/log/example/index.js:74:11)
+    at Module._compile (internal/modules/cjs/loader.js:955:30)
+    at Module._compile (/home/karl/dev/log/node_modules/pirates/lib/index.js:99:24)
+    at Module._extensions..js (internal/modules/cjs/loader.js:991:10)
+    at Object.newLoader [as .js] (/home/karl/dev/log/node_modules/pirates/lib/index.js:104:7)
+    at Module.load (internal/modules/cjs/loader.js:811:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:723:14)
+    at Function.Module.runMain (internal/modules/cjs/loader.js:1043:10)
+    at Object.<anonymous> (/home/karl/dev/log/node_modules/@babel/node/lib/_babel-node.js:180:21)
+    at Module._compile (internal/modules/cjs/loader.js:955:30)
+```
 
-const log = createLog({
-type: 'terminal',
-level: 'info'
-});
-\*/
+File `log/foo2.log`:
+
+```
+{"timestamp":"2020-05-02 15:56:39 UTC+2","level":"ERROR","message":"Error: F*ck\n    at Object.<anonymous> (/home/karl/dev/log/example/index.js:74:11)\n    at Module._compile (internal/modules/cjs/loader.js:955:30)\n    at Module._compile (/home/karl/dev/log/node_modules/pirates/lib/index.js:99:24)\n    at Module._extensions..js (internal/modules/cjs/loader.js:991:10)\n    at Object.newLoader [as .js] (/home/karl/dev/log/node_modules/pirates/lib/index.js:104:7)\n    at Module.load (internal/modules/cjs/loader.js:811:32)\n    at Function.Module._load (internal/modules/cjs/loader.js:723:14)\n    at Function.Module.runMain (internal/modules/cjs/loader.js:1043:10)\n    at Object.<anonymous> (/home/karl/dev/log/node_modules/@babel/node/lib/_babel-node.js:180:21)\n    at Module._compile (internal/modules/cjs/loader.js:955:30)"}
+{"timestamp":"2020-05-02 15:56:39 UTC+2","level":"WARN","message":"This is a warning."}
+```

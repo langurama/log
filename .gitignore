@@ -2,6 +2,7 @@ _coverage/
 _example/
 _test/
 .ignore/
+log/
 node_modules/
 application.log
 test.log

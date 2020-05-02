@@ -3,6 +3,7 @@ _example/
 _test/
 .ignore/
 distributable/
+log/
 node_modules/
 application.log
 test.log
