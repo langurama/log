@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/langurama/log/badge.svg?branch=master)](https://coveralls.io/github/langurama/log?branch=master)
+
 Due to the retardedness of some of the libraries not providing a _simple_ human readable logging library, which can log to file and stdout, I had to tell someone to hold my beer so I could.
 
 # Install

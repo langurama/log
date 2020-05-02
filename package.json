@@ -1,6 +1,6 @@
 {
     "name": "@langurama/log",
-    "version": "1.0.0",
+    "version": "1.0.1-rc",
     "description": "Retardedly basic terminal and file logging for Node.js and the browser.",
     "author": "Karl Morrison <karl@langurama.com>",
     "license": "WTFPL",
@@ -24,7 +24,8 @@
         "build": "npx babel ./source/ -d ./distributable/",
         "dev": "nodemon",
         "start": "npx babel-node -- ./example/index.js",
-        "start_dev": "npx babel-node -- ./example/index.js --dev"
+        "start_dev": "npx babel-node -- ./example/index.js --dev",
+        "check": "npm run lint && npm run style && npm test && npm run build && npm pack"
     },
     "engines": {
         "node": "12"
