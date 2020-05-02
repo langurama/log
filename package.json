@@ -1,6 +1,6 @@
 {
     "name": "log",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "description": "Retardedly basic terminal and file logging.",
     "author": "Karl Morrison <karl@basickarl.io>",
     "license": "WTFPL",
