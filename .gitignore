@@ -1,9 +1,9 @@
-_coverage/
-_example/
-_test/
+.tmp/
 .ignore/
+coverage/
+example/
 log/
 node_modules/
-application.log
-test.log
+test/.tmp/
+*.log
 langurama-log-*.tgz

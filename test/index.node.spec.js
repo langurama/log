@@ -26,7 +26,7 @@ import { testLog } from './helper';
 
 chai.use(spies);
 
-const testLogDir = '_test';
+const testLogDir = './test/.tmp/';
 
 const timestampRegEx = new RegExp(
     '^[0-9]{4}-((0[1-9]{1})|(1[0-2]{1}))-((0[1-9]{1})|([1-2]{1}[0-9]{1})|3[0-1]{1}) (([0-1]{1}[0-9]{1})|(2[0-3]{1})):[0-5]{1}[0-9]{1}:[0-5]{1}[0-9]{1} UTC[+|-]([0-9]{1}|10|11|12)$'
