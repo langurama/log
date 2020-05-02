@@ -22,7 +22,7 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
 
 #### create(configuration)
 
--   configuration **\<Configuration\> | <Configuration[]>** Default: TerminalConfiguration
+-   configuration **\<Configuration\> | <Configuration[]>** _Default: TerminalConfiguration_
     -   Configuration **<TerminalConfiguration | FileConfiguration>**
         -   TerminalConfiguration **\<Object\>** _Only one per log instance._
             -   type **\<string\>** Valid values: [terminal] **Required**
