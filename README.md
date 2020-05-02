@@ -1,21 +1,26 @@
-[![Coverage Status](https://coveralls.io/repos/github/langurama/log/badge.svg?branch=master)](https://coveralls.io/github/langurama/log?branch=master)
+# @langurama/log
+
+![Build](https://img.shields.io/github/workflow/status/langurama/log/Langurama%20Log?style=for-the-badge)
+![Coverage](https://img.shields.io/codecov/c/github/langurama/log?style=for-the-badge)
+![Version](https://img.shields.io/npm/v/@langurama/log.svg?style=for-the-badge)
+![License](https://img.shields.io/npm/l/@langurama/log.svg?style=for-the-badge)
 
 Due to the retardedness of some of the libraries not providing a _simple_ human readable logging library, which can log to file and stdout, I had to tell someone to hold my beer so I could.
 
-# Install
+## Install
 
 `npm install --save-prod --save-exact @langurama/log`
 
 <a name="configuration"></a>
 
-# Configuration
+## Configuration
 
 -   Terminal transport works in both Node.js and the browser.
 -   File transport works only in Node.js.
 
-## \<LanguramaLog\>
+### \<LanguramaLog\>
 
-### create(configuration)
+#### create(configuration)
 
 -   configuration **\<Configuration\> | <Configuration[]>** Default: TerminalConfiguration
     -   Configuration **<TerminalConfiguration | FileConfiguration>**
@@ -31,29 +36,29 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
             -   json **\<boolean\>** _Write to log file in JSON format._ _Default: false_
 -   Returns: **\<Log\>**
 
-## \<Log\>
+### \<Log\>
 
-### error([...messages])
+#### error([...messages])
 
--   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stderr._
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stderr._
 
-### warn([...message])
+#### warn([...message])
 
--   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stderr._
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stderr._
 
-### info([...message])
+#### info([...message])
 
--   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stdout._
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stdout._
 
-### debug([...message])
+#### debug([...message])
 
--   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stdout._
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stdout._
 
-### trace([...message])
+#### trace([...message])
 
--   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stdout._
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stdout._
 
-# Example
+## Example
 
 You may check the `example/` directory for an runnable example file.
 

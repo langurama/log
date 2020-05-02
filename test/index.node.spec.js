@@ -13,6 +13,14 @@ import { default as spies } from 'chai-spies';
 import { default as readline } from 'readline';
 import { v4 as uuidv4 } from 'uuid';
 import { default as chalk } from 'chalk';
+import {
+    mockedRun,
+    MockedRunResult,
+    mockProcessStdout,
+    mockProcessStderr,
+    mockConsoleLog,
+    mockProcessExit
+} from 'jest-mock-process';
 
 // Local modules.
 import {
@@ -301,6 +309,22 @@ describe('Node', () => {
         });
     });
     describe('Functionality', () => {
+        it.only('-', () => {
+            const mockRun = mockedRun({
+                stdout: mockProcessStdout,
+                stderr: mockProcessStderr,
+                exit: mockProcessExit,
+                log: mockConsoleLog
+            });
+            const mocks = mockRun(() => {
+                process.stdout.write('stdout payload');
+                process.stderr.write('stderr payload');
+                process.exit(-1);
+                console.log('log payload');
+            });
+            expect(mocks.stdout).toHaveBeenCalledTimes(1);
+            expect(mocks.log).toHaveBeenCalledWith('log payload');
+        });
         it('should write all stdout log levels to stdout when using terminal transport', done => {
             // Setup.
             const uuid = uuidv4();
