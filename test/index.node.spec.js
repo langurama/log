@@ -343,8 +343,8 @@ describe('Node', () => {
                     const messageExists = item.includes(logMessages[messageNumber][1]);
                     if (!messageExists) done('Not correct, did not find message.');
                     messageNumber += 1;
-                    if (messageNumber === 17) done();
-                    // Timeout means 17 message counts was not hit.
+                    if (messageNumber === logMessages.length - 1) done();
+                    // Timeout means the required amount of messages to be read was not hit.
                 }
             });
             // Test.
@@ -388,8 +388,8 @@ describe('Node', () => {
                     const messageExists = item.includes(logMessages[messageNumber][1]);
                     if (!messageExists) done('Not correct, did not find message.');
                     messageNumber += 1;
-                    if (messageNumber === 4) done();
-                    // Timeout means 4 message counts was not hit.
+                    if (messageNumber === logMessages.length) done();
+                    // Timeout means the required amount of messages to be read was not hit.
                 }
             });
             // Test.
@@ -403,12 +403,24 @@ describe('Node', () => {
         it('should write all log levels to a file when using file transport with absolute path', done => {
             // Setup.
             const uuid = uuidv4();
-            const logMessages = [`${uuid}_e`, `${uuid}_w`, `${uuid}_i`, `${uuid}_d`, `${uuid}_t`];
+            const logMessages = [
+                `${uuid}_e`,
+                `${uuid}_w`,
+                `${uuid}_i`,
+                `${uuid}_d`,
+                `${uuid}_t`,
+                `${uuid}_lt`
+            ];
             const filePath = getUniqueAbsoluteFilePath();
             const log = basickarlLog({
                 ...defaultFileConfiguration,
                 path: filePath,
                 level: 'trace'
+            });
+            const logTooLowLogLevel = basickarlLog({
+                ...defaultFileConfiguration,
+                path: filePath,
+                level: 'debug'
             });
             // Test.
             log.error(logMessages[0]);
@@ -416,6 +428,7 @@ describe('Node', () => {
             log.info(logMessages[2]);
             log.debug(logMessages[3]);
             log.trace(logMessages[4]);
+            logTooLowLogLevel.trace(logMessages[5]);
             // Assert.
             const readInterface = readline.createInterface({
                 input: fs.createReadStream(filePath)
@@ -425,8 +438,8 @@ describe('Node', () => {
                 const messageExists = line.includes(logMessages[messageNumber]);
                 if (!messageExists) done('Not correct, did not find message.');
                 messageNumber += 1;
-                if (messageNumber === 5) done();
-                // Timeout means 5 message counts was not hit.
+                if (messageNumber === logMessages.length - 1) done();
+                // Timeout means the required amount of messages to be read was not hit.
             });
         });
     });
@@ -437,7 +450,8 @@ describe('Node', () => {
             const log = basickarlLog({
                 ...defaultFileConfiguration,
                 path: filePath,
-                json: true
+                json: true,
+                callee: true
             });
             // Test.
             log.info('herro');
@@ -445,6 +459,7 @@ describe('Node', () => {
             const result = getFirstLineFromFile(filePath);
             const test = () => JSON.parse(result);
             assert.doesNotThrow(test, `Expected JSON parsable log, received: ${result}`);
+            assert(test().callee !== undefined, 'Property "callee" does not exist.');
         });
         it('should format output to json without callee', () => {
             // Setup.
@@ -461,6 +476,37 @@ describe('Node', () => {
             const result = getFirstLineFromFile(filePath);
             const test = () => JSON.parse(result);
             assert.doesNotThrow(test, `Expected JSON parsable log, received: ${result}`);
+            assert(test().callee === undefined, 'Property "callee" exists.');
+        });
+        it('should format output with callee', () => {
+            // Setup.
+            const filePath = getUniqueAbsoluteFilePath();
+            const log = basickarlLog({
+                ...defaultFileConfiguration,
+                path: filePath,
+                callee: true
+            });
+            const expectedResult = new RegExp('log/test/index.node.spec.js');
+            // Test.
+            log.info('herro');
+            // Assert.
+            const actualResult = getFirstLineFromFile(filePath);
+            assert(expectedResult.test(actualResult));
+        });
+        it('should format output without callee', () => {
+            // Setup.
+            const filePath = getUniqueAbsoluteFilePath();
+            const log = basickarlLog({
+                ...defaultFileConfiguration,
+                path: filePath,
+                callee: false
+            });
+            const expectedResult = new RegExp('log/test/index.node.spec.js');
+            // Test.
+            log.info('herro');
+            // Assert.
+            const actualResult = getFirstLineFromFile(filePath);
+            assert(!expectedResult.test(actualResult));
         });
         it('should format timestamps correctly for single, double digit and different timezone dates', done => {
             // Setup.
@@ -502,8 +548,8 @@ describe('Node', () => {
                 const timestamp = getTimestamp(line);
                 if (!timestampRegEx.test(timestamp)) done(`Timestamp format invalid: ${timestamp}`);
                 messageNumber += 1;
-                if (messageNumber === 5) done();
-                // Timeout means 5 message counts was not hit.
+                if (messageNumber === logMessages.length) done();
+                // Timeout means the required amount of messages to be read was not hit.
             });
         });
         it('should format undefined data type to string correctly', () => {

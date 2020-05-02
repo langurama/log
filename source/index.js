@@ -144,12 +144,12 @@ function createTerminalTransport(configuration) {
     return function terminalTransport(date, level, ...messages) {
         devLog('Terminal transport:', date, level, messages);
 
+        devLog('Checking log level configuration level for terminal transport.');
+        if (logLevels[level.toLowerCase()] > logLevels[configuration.level]) return;
+
         const timestamp = getTimestamp(date);
 
         devLog('Terminal should use chalk:', shouldUseChalk);
-
-        devLog('Checking log level configuration level.');
-        if (logLevels[level.toLowerCase()] > logLevels[configuration.level]) return;
 
         if (level === 'ERROR') {
             devLog('Terminal ERROR hit.');
@@ -268,6 +268,11 @@ function createFileTransport(configuration) {
 
     // File transport.
     return function fileTransport(date, level, ...messages) {
+        devLog('File transport:', date, level, messages);
+
+        devLog('Checking log level configuration level for file transport.');
+        if (logLevels[level.toLowerCase()] > logLevels[configuration.level]) return;
+
         const timestamp = getTimestamp(date);
 
         const message = formatMessages(undefined, ...messages);
@@ -304,7 +309,7 @@ export const defaultTerminalConfiguration = {
 export const defaultFileConfiguration = {
     type: 'file',
     level: 'info',
-    callee: true,
+    callee: false,
     path: './application.log',
     json: false
 };

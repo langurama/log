@@ -54,8 +54,8 @@ describe('Browser', () => {
                     const messageExists = items[1].includes(logMessages[messageNumber]);
                     if (!messageExists) done('Not correct, did not find message.');
                     messageNumber += 1;
-                    if (messageNumber === 2) done();
-                    // Timeout means 2 message counts was not hit.
+                    if (messageNumber === logMessages.length) done();
+                    // Timeout means the required amount of messages to be read was not hit.
                 }
             });
             // Test.
@@ -79,8 +79,8 @@ describe('Browser', () => {
                     const messageExists = items[1].includes(logMessages[messageNumber]);
                     if (!messageExists) done('Not correct, did not find message.');
                     messageNumber += 1;
-                    if (messageNumber === 2) done();
-                    // Timeout means 2 message counts was not hit.
+                    if (messageNumber === logMessages.length) done();
+                    // Timeout means the required amount of messages to be read was not hit.
                 }
             });
             // Test.
@@ -104,8 +104,8 @@ describe('Browser', () => {
                     const messageExists = items[1].includes(logMessages[messageNumber]);
                     if (!messageExists) done('Not correct, did not find message.');
                     messageNumber += 1;
-                    if (messageNumber === 2) done();
-                    // Timeout means 2 message counts was not hit.
+                    if (messageNumber === logMessages.length) done();
+                    // Timeout means the required amount of messages to be read was not hit.
                 }
             });
             // Test.
@@ -132,8 +132,8 @@ describe('Browser', () => {
                     const messageExists = items[1].includes(logMessages[messageNumber]);
                     if (!messageExists) done('Not correct, did not find message.');
                     messageNumber += 1;
-                    if (messageNumber === 2) done();
-                    // Timeout means 2 message counts was not hit.
+                    if (messageNumber === logMessages.length) done();
+                    // Timeout means the required amount of messages to be read was not hit.
                 }
             });
             // Test.
@@ -160,8 +160,8 @@ describe('Browser', () => {
                     const messageExists = items[1].includes(logMessages[messageNumber]);
                     if (!messageExists) done('Not correct, did not find message.');
                     messageNumber += 1;
-                    if (messageNumber === 2) done();
-                    // Timeout means 2 message counts was not hit.
+                    if (messageNumber === logMessages.length) done();
+                    // Timeout means the required amount of messages to be read was not hit.
                 }
             });
             // Test.
