@@ -8,22 +8,12 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
 
 # Configuration
 
-Terminal transport works in both Node.js and the browser.
-File transport works only in Node.js.
+-   Terminal transport works in both Node.js and the browser.
+-   File transport works only in Node.js.
 
-Terminal transport:
+## \<BasickarlLog\>
 
-<a name="terminal"></a>
-
-## Terminal
-
--   <a href="#create"><code>mqtt.<b>create()</b></code></a>
-
-<a name="create"></a>
-
-# \<BasickarlLog\>
-
-## create(configuration)
+### create(configuration)
 
 -   configuration **\<Configuration\> | <Configuration[]>** Default: TerminalConfiguration
     -   Configuration **<TerminalConfiguration | FileConfiguration>**
@@ -39,25 +29,25 @@ Terminal transport:
             -   json **\<boolean\>** _Write to log file in JSON format._ _Default: false_
 -   Returns: **\<Log\>**
 
-# \<Log\>
+## \<Log\>
 
-## error([...messages])
-
--   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stderr._
-
-## warn([...message])
+### error([...messages])
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stderr._
 
-## info([...message])
+### warn([...message])
+
+-   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stderr._
+
+### info([...message])
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stdout._
 
-## debug([...message])
+### debug([...message])
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stdout._
 
-## trace([...message])
+### trace([...message])
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error | Function>** _Writes to stdout._
 
