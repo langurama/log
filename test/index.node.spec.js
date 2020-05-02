@@ -463,6 +463,16 @@ describe('Node', () => {
                 jasmine.stringMatching(/log\/test\/index.node.spec.js/)
             );
         });
+        it('should display correct color in stack trace', () => {
+            // Setup.
+            const log = languramaLog();
+            const mock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {});
+            // Test.
+            log.error(new Error('shite'));
+            // Assert.
+            expect(mock).toHaveBeenCalledTimes(1);
+            expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(/\(internal\//));
+        });
         it('should not display low level log in terminal when log level is set too high', () => {
             // Setup.
             const log = languramaLog();
