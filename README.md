@@ -2,7 +2,7 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
 
 # Install
 
-`npm install --save-prod --save-exact @basickarl/log`
+`npm install --save-prod --save-exact @langurama/log`
 
 <a name="configuration"></a>
 
@@ -11,7 +11,7 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
 -   Terminal transport works in both Node.js and the browser.
 -   File transport works only in Node.js.
 
-## \<BasickarlLog\>
+## \<LanguramaLog\>
 
 ### create(configuration)
 
@@ -56,10 +56,10 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
 You may check the `example/` directory for an runnable example file.
 
 ```
-import { default as basickarlLog } from 'log';
+import { default as languramaLog } from 'log';
 import { default as chalk } from 'chalk'; // If you want to have colors in the terminal.
 
-const log = basickarlLog.create([
+const log = languramaLog.create([
     {
         type: 'file',
         path: 'log/foo2.log',

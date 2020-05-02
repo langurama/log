@@ -32,7 +32,7 @@ const isDev = process.argv.reduce(function (value, argument) {
 /* istanbul ignore next */
 
 function devLog(...messages) {
-  if (isDev) console.log('[@basickarl/log]', ...messages);
+  if (isDev) console.log('[@langurama/log]', ...messages);
 }
 
 function createLogsDirectory(logsDirPath) {
@@ -143,10 +143,10 @@ function createTerminalTransport(configuration) {
   const shouldUseChalk = configuration.chalk !== undefined;
   return function terminalTransport(date, level, ...messages) {
     devLog('Terminal transport:', date, level, messages);
+    devLog('Checking log level configuration level for terminal transport.');
+    if (logLevels[level.toLowerCase()] > logLevels[configuration.level]) return;
     const timestamp = getTimestamp(date);
     devLog('Terminal should use chalk:', shouldUseChalk);
-    devLog('Checking log level configuration level.');
-    if (logLevels[level.toLowerCase()] > logLevels[configuration.level]) return;
 
     if (level === 'ERROR') {
       devLog('Terminal ERROR hit.');
@@ -194,6 +194,9 @@ function createFileTransport(configuration) {
   devLog(`Absolute file path: ${absoluteFilePath}`); // File transport.
 
   return function fileTransport(date, level, ...messages) {
+    devLog('File transport:', date, level, messages);
+    devLog('Checking log level configuration level for file transport.');
+    if (logLevels[level.toLowerCase()] > logLevels[configuration.level]) return;
     const timestamp = getTimestamp(date);
     const message = formatMessages(undefined, ...messages);
     const log = shouldJsonFormat ? shouldIncludeCallee ? `${JSON.stringify({
@@ -222,7 +225,7 @@ exports.defaultTerminalConfiguration = defaultTerminalConfiguration;
 const defaultFileConfiguration = {
   type: 'file',
   level: 'info',
-  callee: true,
+  callee: false,
   path: './application.log',
   json: false
 };
