@@ -19,7 +19,7 @@ const isDev = process.argv.reduce(function(value, argument) {
 // Used for debugging this package.
 /* istanbul ignore next */
 function devLog(...messages) {
-    if (isDev) console.log('[@basickarl/log]', ...messages);
+    if (isDev) console.log('[@langurama/log]', ...messages);
 }
 
 function createLogsDirectory(logsDirPath) {

@@ -1,17 +1,18 @@
 {
-    "name": "log",
-    "version": "0.2.2",
-    "description": "Retardedly basic terminal and file logging.",
-    "author": "Karl Morrison <karl@basickarl.io>",
+    "name": "@langurama/log",
+    "version": "1.0.0",
+    "description": "Retardedly basic terminal and file logging for Node.js and the browser.",
+    "author": "Karl Morrison <karl@langurama.com>",
     "license": "WTFPL",
     "keywords": [
-        "basickarl",
+        "langurama",
         "log",
-        "logging"
+        "logging",
+        "retard"
     ],
     "repository": {
         "type": "git",
-        "url": "git@github.com:basickarl/log.git"
+        "url": "git@github.com:langurama/log.git"
     },
     "main": "./distributable/",
     "scripts": {

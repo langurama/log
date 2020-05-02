@@ -16,7 +16,7 @@ import { default as chalk } from 'chalk';
 
 // Local modules.
 import {
-    default as basickarlLog,
+    default as languramaLog,
     defaultTerminalConfiguration,
     defaultFileConfiguration,
     info
@@ -72,7 +72,7 @@ function getMessageFromLog(line) {
 }
 
 function createFileLog(filePath) {
-    return basickarlLog({
+    return languramaLog({
         ...defaultFileConfiguration,
         callee: false,
         path: filePath
@@ -86,7 +86,7 @@ describe('Node', () => {
             const expectedResultArray = [defaultTerminalConfiguration];
             const expectedResultType = typeof expectedResultArray;
             // Test.
-            const log = basickarlLog();
+            const log = languramaLog();
             // Assert.
             const actualResultArray = log._configurations;
             const actualResultType = typeof actualResultArray;
@@ -99,7 +99,7 @@ describe('Node', () => {
             const expectedResultArray = [configuration];
             const expectedResultType = typeof expectedResultArray;
             // Test.
-            const log = basickarlLog(configuration);
+            const log = languramaLog(configuration);
             // Assert.
             const actualResultArray = log._configurations;
             const actualResultType = typeof actualResultArray;
@@ -115,7 +115,7 @@ describe('Node', () => {
             const expectedResultArray = [configuration];
             const expectedResultType = typeof expectedResultArray;
             // Test.
-            const log = basickarlLog(configuration);
+            const log = languramaLog(configuration);
             // Assert.
             const actualResultArray = log._configurations;
             const actualResultType = typeof actualResultArray;
@@ -126,7 +126,7 @@ describe('Node', () => {
             // Setup.
             const dirPath = getUniqueRelativeDirPath();
             // Test.
-            basickarlLog({ ...defaultFileConfiguration, path: `${dirPath}/test.log` });
+            languramaLog({ ...defaultFileConfiguration, path: `${dirPath}/test.log` });
             // Assert.
             assert(fs.existsSync(dirPath), 'Log file directory was not created.');
         });
@@ -134,7 +134,7 @@ describe('Node', () => {
             // Setup.
             const dirPath = getUniqueAbsoluteDirPath();
             // Test.
-            basickarlLog({ ...defaultFileConfiguration, path: `${dirPath}/test.log` });
+            languramaLog({ ...defaultFileConfiguration, path: `${dirPath}/test.log` });
             // Assert.
             assert(fs.existsSync(dirPath), 'Log file directory was not created.');
         });
@@ -144,7 +144,7 @@ describe('Node', () => {
             if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
             // Test.
             try {
-                basickarlLog({
+                languramaLog({
                     type: 'file',
                     path: `${dirPath}/test.log`
                 });
@@ -159,7 +159,7 @@ describe('Node', () => {
                 'Configuration must be of type "object" or an "array" of "objects".'
             );
             // Test.
-            const test = () => basickarlLog(true);
+            const test = () => languramaLog(true);
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -169,7 +169,7 @@ describe('Node', () => {
                 'Invalid configuration value for the property "type": undefined'
             );
             // Test.
-            const test = () => basickarlLog({});
+            const test = () => languramaLog({});
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -179,7 +179,7 @@ describe('Node', () => {
                 'Error: Configuration must be of type "object" or an "array" of "objects".'
             );
             // Test.
-            const test = () => basickarlLog(null);
+            const test = () => languramaLog(null);
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -190,7 +190,7 @@ describe('Node', () => {
             );
             // Test.
             const test = () =>
-                basickarlLog([defaultTerminalConfiguration, defaultTerminalConfiguration]);
+                languramaLog([defaultTerminalConfiguration, defaultTerminalConfiguration]);
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -200,7 +200,7 @@ describe('Node', () => {
                 'Error: "terminal" or "file" configuration must be of type "object". Received: null'
             );
             // Test.
-            const test = () => basickarlLog([null, { type: 'terminal' }]);
+            const test = () => languramaLog([null, { type: 'terminal' }]);
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -210,7 +210,7 @@ describe('Node', () => {
                 'Error: "terminal" or "file" configuration must be of type "object". Received: 1'
             );
             // Test.
-            const test = () => basickarlLog([1, { type: 'terminal' }]);
+            const test = () => languramaLog([1, { type: 'terminal' }]);
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -220,7 +220,7 @@ describe('Node', () => {
                 'Error: Invalid configuration value for the property "type": undefined'
             );
             // Test.
-            const test = () => basickarlLog([{}, {}]);
+            const test = () => languramaLog([{}, {}]);
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -231,7 +231,7 @@ describe('Node', () => {
             );
             // Test.
             const test = () =>
-                basickarlLog({
+                languramaLog({
                     ...defaultTerminalConfiguration,
                     unknown: 'herro'
                 });
@@ -244,7 +244,7 @@ describe('Node', () => {
                 'Invalid configuration value for the property "type": does not exist'
             );
             // Test.
-            const test = () => basickarlLog({ type: 'does not exist' });
+            const test = () => languramaLog({ type: 'does not exist' });
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -254,7 +254,7 @@ describe('Node', () => {
                 'Error: Configuration value for property "chalk" must be of instance "Chalk".'
             );
             // Test.
-            const test = () => basickarlLog({ ...defaultTerminalConfiguration, chalk: true });
+            const test = () => languramaLog({ ...defaultTerminalConfiguration, chalk: true });
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -264,7 +264,7 @@ describe('Node', () => {
                 'Invalid configuration value for the property "level" must be one of the following: error,warn,info,debug,trace'
             );
             // Test.
-            const test = () => basickarlLog({ type: 'terminal', level: 'does not exist' });
+            const test = () => languramaLog({ type: 'terminal', level: 'does not exist' });
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -274,7 +274,7 @@ describe('Node', () => {
                 'Error: Invalid configuration value for the property "level" must be of type "string".'
             );
             // Test.
-            const test = () => basickarlLog({ type: 'terminal', level: true });
+            const test = () => languramaLog({ type: 'terminal', level: true });
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -284,7 +284,7 @@ describe('Node', () => {
                 'Error: Invalid configuration value for the property "json" must be of type "boolean".'
             );
             // Test.
-            const test = () => basickarlLog({ ...defaultFileConfiguration, json: 'true' });
+            const test = () => languramaLog({ ...defaultFileConfiguration, json: 'true' });
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -295,7 +295,7 @@ describe('Node', () => {
             );
             // Test.
             const test = () =>
-                basickarlLog({ type: 'terminal', level: 'info', callee: 'does not exist' });
+                languramaLog({ type: 'terminal', level: 'info', callee: 'does not exist' });
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -324,18 +324,18 @@ describe('Node', () => {
                 [[`${uuid}_ci9`, new Error('help')], '[37mINFO[39m'],
                 [undefined, `${uuid}_lt`]
             ];
-            const log = basickarlLog({ ...defaultTerminalConfiguration, level: 'trace' });
-            const logChalk = basickarlLog({
+            const log = languramaLog({ ...defaultTerminalConfiguration, level: 'trace' });
+            const logChalk = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'trace',
                 chalk
             });
-            const logNoCallee = basickarlLog({
+            const logNoCallee = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'trace',
                 callee: false
             });
-            const logTooLowLogLevel = basickarlLog();
+            const logTooLowLogLevel = languramaLog();
             // Assert.
             let messageNumber = 0;
             chai.spy.on(process.stdout, 'write', function(item) {
@@ -378,9 +378,9 @@ describe('Node', () => {
                 [`${uuid}_cw`, '[43m[43m[30m[1mWARN[22m[39m[43m[49m'],
                 [[`${uuid}_ce`, new Error('herro')], '[40m[41m[37m[1mERROR[22m[39m[40m[49m']
             ];
-            const log = basickarlLog(defaultTerminalConfiguration);
-            const logChalk = basickarlLog({ ...defaultTerminalConfiguration, chalk });
-            const logNoCallee = basickarlLog({ ...defaultTerminalConfiguration, callee: false });
+            const log = languramaLog(defaultTerminalConfiguration);
+            const logChalk = languramaLog({ ...defaultTerminalConfiguration, chalk });
+            const logNoCallee = languramaLog({ ...defaultTerminalConfiguration, callee: false });
             // Assert.
             let messageNumber = 0;
             chai.spy.on(process.stderr, 'write', function(item) {
@@ -412,12 +412,12 @@ describe('Node', () => {
                 `${uuid}_lt`
             ];
             const filePath = getUniqueAbsoluteFilePath();
-            const log = basickarlLog({
+            const log = languramaLog({
                 ...defaultFileConfiguration,
                 path: filePath,
                 level: 'trace'
             });
-            const logTooLowLogLevel = basickarlLog({
+            const logTooLowLogLevel = languramaLog({
                 ...defaultFileConfiguration,
                 path: filePath,
                 level: 'debug'
@@ -447,7 +447,7 @@ describe('Node', () => {
         it('should format output to json with callee', () => {
             // Setup.
             const filePath = getUniqueAbsoluteFilePath();
-            const log = basickarlLog({
+            const log = languramaLog({
                 ...defaultFileConfiguration,
                 path: filePath,
                 json: true,
@@ -464,7 +464,7 @@ describe('Node', () => {
         it('should format output to json without callee', () => {
             // Setup.
             const filePath = getUniqueAbsoluteFilePath();
-            const log = basickarlLog({
+            const log = languramaLog({
                 ...defaultFileConfiguration,
                 path: filePath,
                 json: true,
@@ -481,7 +481,7 @@ describe('Node', () => {
         it('should format output with callee', () => {
             // Setup.
             const filePath = getUniqueAbsoluteFilePath();
-            const log = basickarlLog({
+            const log = languramaLog({
                 ...defaultFileConfiguration,
                 path: filePath,
                 callee: true
@@ -496,7 +496,7 @@ describe('Node', () => {
         it('should format output without callee', () => {
             // Setup.
             const filePath = getUniqueAbsoluteFilePath();
-            const log = basickarlLog({
+            const log = languramaLog({
                 ...defaultFileConfiguration,
                 path: filePath,
                 callee: false
@@ -518,7 +518,7 @@ describe('Node', () => {
                 'positive-timezone'
             ];
             const filePath = getUniqueAbsoluteFilePath();
-            const log = basickarlLog({
+            const log = languramaLog({
                 ...defaultFileConfiguration,
                 callee: false,
                 path: filePath

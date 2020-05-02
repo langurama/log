@@ -2,12 +2,12 @@
 import { default as chalk } from 'chalk';
 
 // Local modules.
-import { default as basickarlLog } from '../source';
+import { default as languramaLog } from '../source';
 
 console.log('Example starting!');
 
 console.log('Non-color example!');
-const log = basickarlLog();
+const log = languramaLog();
 
 log.info('herro', 1, 3.4, null, undefined, [1, 9], new Error('crap'), true, { wtf: 'k' });
 log.error(new Error('F*ck'));
@@ -17,7 +17,7 @@ log.debug(`Won't show`);
 log.trace(`Still won't show`);
 
 console.log('Color example!');
-const logColor = basickarlLog({
+const logColor = languramaLog({
     type: 'terminal',
     chalk,
     level: 'trace'
@@ -31,7 +31,7 @@ logColor.debug('k.');
 logColor.trace('Yea you get the picture');
 
 console.log('File example!');
-const logFile = basickarlLog({
+const logFile = languramaLog({
     type: 'file',
     path: './_example/456456/example.log',
     level: 'trace'

@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Local modules.
 import {
-    default as basickarlLog,
+    default as languramaLog,
     defaultFileConfiguration,
     defaultTerminalConfiguration
 } from '../source';
@@ -33,7 +33,7 @@ describe('Browser', () => {
                 'Error: Browser may not have a file configuration, it may only include a terminal configuration.'
             );
             // Test.
-            const test = () => basickarlLog(defaultFileConfiguration);
+            const test = () => languramaLog(defaultFileConfiguration);
             // Assert.
             assert.throws(test, expectedResult);
         });
@@ -41,8 +41,8 @@ describe('Browser', () => {
             // Setup.
             const uuid = uuidv4();
             const logMessages = [`${uuid}_ne_browser`, `${uuid}_ce_browser`];
-            const log = basickarlLog();
-            const logNoCallee = basickarlLog({
+            const log = languramaLog();
+            const logNoCallee = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'error',
                 callee: false
@@ -66,8 +66,8 @@ describe('Browser', () => {
             // Setup.
             const uuid = uuidv4();
             const logMessages = [`${uuid}_nw_browser`, `${uuid}_cw_browser`];
-            const log = basickarlLog();
-            const logNoCallee = basickarlLog({
+            const log = languramaLog();
+            const logNoCallee = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'warn',
                 callee: false
@@ -91,8 +91,8 @@ describe('Browser', () => {
             // Setup.
             const uuid = uuidv4();
             const logMessages = [`${uuid}_ni_browser`, `${uuid}_ci_browser`];
-            const log = basickarlLog();
-            const logNoCallee = basickarlLog({
+            const log = languramaLog();
+            const logNoCallee = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'info',
                 callee: false
@@ -116,11 +116,11 @@ describe('Browser', () => {
             // Setup.
             const uuid = uuidv4();
             const logMessages = [`${uuid}_nd_browser`, `${uuid}_cd_browser`];
-            const log = basickarlLog({
+            const log = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'debug'
             });
-            const logNoCallee = basickarlLog({
+            const logNoCallee = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'debug',
                 callee: false
@@ -144,11 +144,11 @@ describe('Browser', () => {
             // Setup.
             const uuid = uuidv4();
             const logMessages = [`${uuid}_nt_browser`, `${uuid}_ct_browser`];
-            const log = basickarlLog({
+            const log = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'trace'
             });
-            const logNoCallee = basickarlLog({
+            const logNoCallee = languramaLog({
                 ...defaultTerminalConfiguration,
                 level: 'trace',
                 callee: false
