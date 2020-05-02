@@ -33,7 +33,7 @@ logColor.trace('Yea you get the picture');
 console.log('File example!');
 const logFile = languramaLog({
     type: 'file',
-    path: './_example/456456/example.log',
+    path: './example/log/456456/example.log',
     level: 'trace'
 });
 

@@ -1,8 +1,8 @@
-_coverage/
-_example/
-_test/
+.tmp/
 .ignore/
+coverage/
 distributable/
+example/
 log/
 node_modules/
 application.log

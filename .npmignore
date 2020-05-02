@@ -1,5 +1,6 @@
 _*/
 .*/
+coverage/
 example/
 log/
 !node_modules/

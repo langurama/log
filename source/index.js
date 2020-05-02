@@ -310,7 +310,7 @@ export const defaultFileConfiguration = {
     type: 'file',
     level: 'info',
     callee: false,
-    path: './application.log',
+    path: './log/application.log',
     json: false
 };
 

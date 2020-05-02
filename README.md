@@ -27,7 +27,7 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
         -   FileConfiguration **\<Object\>**
             -   type **\<string\>** Valid values: [file] **Required**
             -   level **\<string\>** Valid values: [error, warn, info, debug, trace] _Default: info_
-            -   path **\<string\>** _Path where log should be written to._ _Default: ./application.log_
+            -   path **\<string\>** _Path where log should be written to._ _Default: ./log/application.log_
             -   json **\<boolean\>** _Write to log file in JSON format._ _Default: false_
 -   Returns: **\<Log\>**
 
