@@ -9,6 +9,7 @@ const isBrowser = typeof window === 'undefined' ? false : true;
 
 // Check if this package is in development mode.
 const isDev = process.argv.reduce(function(value, argument) {
+    /* istanbul ignore next */
     if (value || argument === '--dev') return true;
     return false;
 }, false);
@@ -16,52 +17,40 @@ const isDev = process.argv.reduce(function(value, argument) {
 ////////////////////////////////////////////////////////////////////////////////
 
 // Used for debugging this package.
+/* istanbul ignore next */
 function devLog(...messages) {
-    if (isDev) {
-        console.log('[@basickarl/log]', ...messages);
-    }
+    if (isDev) console.log('[@basickarl/log]', ...messages);
 }
 
 function createLogsDirectory(logsDirPath) {
     if (!fs.existsSync(logsDirPath)) {
-        fs.mkdirSync(logsDirPath);
+        devLog(`Creating log directory: ${logsDirPath}`);
+        fs.mkdirSync(logsDirPath, { recursive: true });
+    } else {
+        devLog(`Log directory already existed: ${logsDirPath}`);
     }
 }
 
 function getTimestamp(date) {
     let year = date.getFullYear().toString();
 
-    let month = (date.getMonth() + 1).toString();
-    if (month.length === 1) {
-        month = `0${month}`;
-    }
+    const origMonth = date.getMonth() + 1;
+    const month = origMonth.toString().length === 1 ? `0${origMonth}` : origMonth;
 
-    let day = date.getDate().toString();
-    if (day.length === 1) {
-        day = `0${day}`;
-    }
+    const origDay = date.getDate();
+    const day = origDay.toString().length === 1 ? `0${origDay}` : origDay;
 
-    let hours = date.getHours().toString();
-    if (hours.length === 1) {
-        hours = `0${hours}`;
-    }
+    const origHours = date.getHours();
+    const hours = origHours.toString().length === 1 ? `0${origHours}` : origHours;
 
-    let minutes = date.getMinutes().toString();
-    if (minutes.length === 1) {
-        minutes = `0${minutes}`;
-    }
+    const origMinutes = date.getMinutes();
+    const minutes = origMinutes.toString().length === 1 ? `0${origMinutes}` : origMinutes;
 
-    let seconds = date.getSeconds().toString();
-    if (seconds.length === 1) {
-        seconds = `0${seconds}`;
-    }
+    const origSeconds = date.getSeconds();
+    const seconds = origSeconds.toString().length === 1 ? `0${origSeconds}` : origSeconds;
 
-    let offsetUTC = date.getTimezoneOffset() / 60;
-    if (offsetUTC > 0) {
-        offsetUTC = `-${offsetUTC}`;
-    } else {
-        offsetUTC = `+${offsetUTC * -1}`;
-    }
+    const origOffsetUTC = date.getTimezoneOffset() / 60;
+    const offsetUTC = origOffsetUTC > 0 ? `-${origOffsetUTC}` : `+${origOffsetUTC * -1}`;
 
     const timestamp = `${year}-${month}-${day} ${hours}:${minutes}:${seconds} UTC${offsetUTC}`;
     return timestamp;
@@ -91,12 +80,16 @@ function formatMessages(chalk, ...messages) {
             }
         } else if (argument.constructor === Array) {
             if (chalk !== undefined) {
-                newMessage += chalk.green(argument.toString());
+                newMessage += chalk.green(`[${argument.toString()}]`);
             } else {
-                newMessage += argument.toString();
+                newMessage += `[${argument.toString()}]`;
             }
-        } else if (argument.constructor === String) {
-            newMessage += argument;
+        } else if (argument.constructor === Symbol) {
+            newMessage += String(argument);
+            // TODO: Remove disable rule when BigInt exists.
+            // eslint-disable-next-line no-undef
+        } else if (argument.constructor === BigInt) {
+            newMessage += argument.toString();
         } else if (argument.constructor === Number) {
             if (chalk !== undefined) {
                 newMessage += chalk.green(argument.toString());
@@ -114,7 +107,7 @@ function formatMessages(chalk, ...messages) {
                 newMessage += argument.stack
                     .split('\n')
                     .map(line => {
-                        if (line.indexOf('(internal/modules') === -1) return chalk.red(line);
+                        if (line.indexOf('(internal/') !== -1) return chalk.red(line);
                         return chalk.grey(line);
                     })
                     .join('\n');
@@ -124,12 +117,14 @@ function formatMessages(chalk, ...messages) {
         } else if (argument.constructor === Object) {
             newMessage += JSON.stringify(argument, null, 4);
         } else {
+            // String or unknown.
             newMessage += argument.toString();
         }
 
         return newMessage;
     }, '');
 
+    devLog(`Formatted message: ${message}`);
     return message;
 }
 
@@ -146,12 +141,15 @@ function createTerminalTransport(configuration) {
     const shouldIncludeCallee = configuration.callee;
     const shouldUseChalk = configuration.chalk !== undefined;
 
-    return function terminalTransport(date, level, messages) {
+    return function terminalTransport(date, level, ...messages) {
         devLog('Terminal transport:', date, level, messages);
 
         const timestamp = getTimestamp(date);
 
         devLog('Terminal should use chalk:', shouldUseChalk);
+
+        devLog('Checking log level configuration level.');
+        if (logLevels[level.toLowerCase()] > logLevels[configuration.level]) return;
 
         if (level === 'ERROR') {
             devLog('Terminal ERROR hit.');
@@ -221,7 +219,8 @@ function createTerminalTransport(configuration) {
                           shouldIncludeCallee ? getCallee(configuration.chalk) : '' + '\n'
                       }` + '\n'
                   );
-        } else if (level === 'TRACE') {
+            // TODO: When https://github.com/gotwarlost/istanbul/issues/781s is fixed, turn next line into else if for TRACE.
+        } else {
             devLog('Terminal TRACE hit.');
             const timestampAndLevel = shouldUseChalk
                 ? `${configuration.chalk.grey(timestamp)}  ${configuration.chalk.green(level)}`
@@ -245,43 +244,53 @@ function createTerminalTransport(configuration) {
 function createFileTransport(configuration) {
     const shouldIncludeCallee = configuration.callee === false ? false : true;
     const shouldJsonFormat = configuration.json === true ? true : false;
+    // File path.
     // prettier-ignore
     const isAnAbsolutePath =
-        configuration.path.startsWith('/') // Linux/macOS
-        || configuration.path.substring(1).startsWith(':/'); // Windows
+        configuration.path.startsWith('/') // Linux/macOS.
+        || configuration.path.substring(1).startsWith(':/'); // Windows.
+    devLog(`Is absolute path: ${isAnAbsolutePath}`);
     // prettier-ignore
-    const logPathTmp = configuration.path.split('/');
-    logPathTmp.pop();
-    const logPath = logPathTmp.join('/');
-    let absolutePath;
-    if (isAnAbsolutePath) {
-        // Absolute path
-        absolutePath = logPath;
-    } else {
-        // Relative Path
-        absolutePath = path.join(__dirname, logPath);
-    }
-    createLogsDirectory(absolutePath);
-    return function fileTransport(date, level, messages) {
+    const logDirectoryPathTmp = configuration.path.split('/');
+    logDirectoryPathTmp.pop();
+    const logDirectoryPath = logDirectoryPathTmp.join('/');
+    devLog(`Log directory path: ${logDirectoryPath}`);
+
+    const absoluteLogDirectoryPath = isAnAbsolutePath
+        ? logDirectoryPath
+        : path.join(process.cwd(), logDirectoryPath);
+    createLogsDirectory(absoluteLogDirectoryPath);
+
+    const absoluteFilePath = isAnAbsolutePath
+        ? configuration.path
+        : path.join(process.cwd(), configuration.path);
+    devLog(`Absolute file path: ${absoluteFilePath}`);
+
+    // File transport.
+    return function fileTransport(date, level, ...messages) {
         const timestamp = getTimestamp(date);
 
-        let string;
-        if (shouldIncludeCallee) {
-            string = `${formatMessages(messages)} ${getCallee()}`;
-        } else {
-            string = formatMessages(messages);
-        }
+        const message = formatMessages(undefined, ...messages);
 
-        let log;
-        if (shouldJsonFormat) {
-            // JSON
-            log = JSON.stringify(`${timestamp} ${level} ${string}\n`);
-        } else {
-            // Text
-            log = `${timestamp} ${level} ${string}\n`;
-        }
+        const log = shouldJsonFormat
+            ? shouldIncludeCallee
+                ? `${JSON.stringify({
+                      timestamp,
+                      level,
+                      message,
+                      callee: getCallee()
+                  })}\n`
+                : `${JSON.stringify({
+                      timestamp,
+                      level,
+                      message
+                  })}\n`
+            : shouldIncludeCallee
+            ? `${timestamp} ${level} ${message} ${getCallee()}\n`
+            : `${timestamp} ${level} ${message}\n`;
 
-        fs.appendFileSync(absolutePath, log);
+        devLog(`Logging to file: ${log}`);
+        fs.appendFileSync(absoluteFilePath, log);
     };
 }
 
@@ -296,15 +305,26 @@ export const defaultFileConfiguration = {
     type: 'file',
     level: 'info',
     callee: true,
-    path: './info.log',
+    path: './application.log',
     json: false
 };
 
+export const logLevels = {
+    error: 0,
+    warn: 1,
+    info: 2,
+    debug: 3,
+    trace: 4
+};
+
 function validateConfiguration(userConfiguration) {
-    // Validate if it is an object.
     const isObjectAndNotNull = typeof userConfiguration === 'object' && userConfiguration !== null;
     if (!isObjectAndNotNull)
-        throw new Error('"terminal" or "file" configuration must be of type "object".');
+        throw new Error(
+            `"terminal" or "file" configuration must be of type "object". Received: ${JSON.stringify(
+                userConfiguration
+            )}`
+        );
 
     const isTerminalConfiguration = userConfiguration.type === 'terminal';
     const isFileConfiguration = userConfiguration.type === 'file';
@@ -336,11 +356,23 @@ function validateConfiguration(userConfiguration) {
 
     // Check properties shared by both are correct.
     if (userConfiguration.level && typeof userConfiguration.level !== 'string')
-        throw new Error('Configuration value "level" must be of type "string".');
+        throw new Error(
+            'Invalid configuration value for the property "level" must be of type "string".'
+        );
+    if (userConfiguration.level && logLevels[userConfiguration.level] === undefined)
+        throw new Error(
+            `Invalid configuration value for the property "level" must be one of the following: ${Object.keys(
+                logLevels
+            )}`
+        );
     if (userConfiguration.callee && typeof userConfiguration.callee !== 'boolean')
-        throw new Error('Configuration value "callee" must be of type "boolean".');
+        throw new Error(
+            'Invalid configuration value for the property "callee" must be of type "boolean".'
+        );
     if (userConfiguration.json && typeof userConfiguration.json !== 'boolean')
-        throw new Error('Configuration value "json" must be of type "boolean".');
+        throw new Error(
+            'Invalid configuration value for the property "json" must be of type "boolean".'
+        );
 
     // If chalk is defined make sure it's of correct type.
     const chalkIsNotUndefinedButIsIncorrect =
@@ -374,16 +406,16 @@ export default function create(userConfigurationOrConfigurations) {
         throw new Error('Configuration must be of type "object" or an "array" of "objects".');
     }
 
-    // Convery single object into array.
+    // Convert single object into array.
     const userConfigurations = isUndefined
-        ? [defaultTerminalConfiguration] // Default.
-        : isObjectAndNotNull
-        ? [userConfigurationOrConfigurations]
-        : userConfigurationOrConfigurations;
+        ? [defaultTerminalConfiguration] // undefined
+        : isObjectAndNotNull && !isArray
+        ? [userConfigurationOrConfigurations] // {}
+        : userConfigurationOrConfigurations; // [{}, {}]
 
     // All of the configurations check out. Check if there is more than one terminal configuration.
     let numberOfTerminalConfigurations = 0;
-    const configurations = userConfigurations.map(function validateAndcompleteUserConfiguration(
+    const configurations = userConfigurations.map(function validateAndCompleteUserConfiguration(
         configuration
     ) {
         // Validate.
@@ -420,10 +452,11 @@ export default function create(userConfigurationOrConfigurations) {
         if (configuration.type === 'terminal') {
             // Create and add transport.
             transports.push(createTerminalTransport(configuration));
-        } else if (configuration.type === 'file') {
+        } else {
             // Create and add transport.
             transports.push(createFileTransport(configuration));
         }
+        return;
     });
     devLog(`Transports created. Amount of transports: ${transports.length}`);
 
@@ -432,21 +465,27 @@ export default function create(userConfigurationOrConfigurations) {
     devLog('Creating log instance.');
     const log = {
         error: (...messages) => {
-            error(transports, messages);
+            const date = new Date();
+            error(date, transports, ...messages);
         },
         warn: (...messages) => {
-            warn(transports, messages);
+            const date = new Date();
+            warn(date, transports, ...messages);
         },
         info: (...messages) => {
-            info(transports, messages);
+            const date = new Date();
+            info(date, transports, ...messages);
         },
         debug: (...messages) => {
-            debug(transports, messages);
+            const date = new Date();
+            debug(date, transports, ...messages);
         },
         trace: (...messages) => {
-            trace(transports, messages);
+            const date = new Date();
+            trace(date, transports, ...messages);
         },
-        _configurations: configurations
+        _configurations: configurations,
+        _transports: transports
     };
     devLog('Log instance created.');
 
@@ -457,28 +496,23 @@ export default function create(userConfigurationOrConfigurations) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-function error(transports, messages) {
+export function error(date, transports, ...messages) {
     devLog('error messages:', messages);
-    const date = new Date();
-    transports.forEach(func => func(date, 'ERROR', messages));
+    transports.forEach(func => func(date, 'ERROR', ...messages));
 }
-function warn(transports, messages) {
+export function warn(date, transports, ...messages) {
     devLog('warn messages:', messages);
-    const date = new Date();
-    transports.forEach(func => func(date, 'WARN', messages));
+    transports.forEach(func => func(date, 'WARN', ...messages));
 }
-function info(transports, messages) {
+export function info(date, transports, ...messages) {
     devLog('info messages:', messages);
-    const date = new Date();
-    transports.forEach(func => func(date, 'INFO', messages));
+    transports.forEach(func => func(date, 'INFO', ...messages));
 }
-function debug(transports, messages) {
+export function debug(date, transports, ...messages) {
     devLog('debug messages:', messages);
-    const date = new Date();
-    transports.forEach(func => func(date, 'DEBUG', messages));
+    transports.forEach(func => func(date, 'DEBUG', ...messages));
 }
-function trace(transports, messages) {
+export function trace(date, transports, ...messages) {
     devLog('trace messages:', messages);
-    const date = new Date();
-    transports.forEach(func => func(date, 'TRACE', messages));
+    transports.forEach(func => func(date, 'TRACE', ...messages));
 }

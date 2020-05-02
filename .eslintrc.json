@@ -2,7 +2,8 @@
     "env": {
         "es2015": true,
         "node": true,
-        "jest": true
+        "jest": true,
+        "browser": true
     },
     "extends": "eslint:recommended",
     "globals": {
@@ -13,5 +14,7 @@
         "ecmaVersion": 2018,
         "sourceType": "module"
     },
-    "rules": {}
+    "rules": {
+        "eol-last": ["error", "always"]
+    }
 }

@@ -1,5 +1,6 @@
 {
     "editor.formatOnSave": true,
     "typescript.format.enable": false,
-    "typescript.validate.enable": false
+    "typescript.validate.enable": false,
+    "files.insertFinalNewline": true
 }
