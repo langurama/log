@@ -20,7 +20,7 @@
         "lint_fix": "npx eslint . --fix",
         "style": "npx prettier --check \"./**/*.js\" --check \"./**/*.json\"",
         "style_fix": "npx prettier --write \"./**/*.js\" --write \"./**/*.json\"",
-        "test": "npx jest --verbose --coverage",
+        "test": "npx jest --verbose --coverage --color",
         "build": "npx babel ./source/ -d ./distributable/",
         "dev": "nodemon",
         "start": "npx babel-node -- ./example/index.js",
