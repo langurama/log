@@ -113,7 +113,7 @@ function formatMessages(chalk, ...messages) {
     } else if (argument.constructor === Error) {
       if (chalk !== undefined) {
         newMessage += argument.stack.split('\n').map(line => {
-          if (line.indexOf('(internal/') !== -1) return chalk.red(line);
+          if (line.indexOf('(internal/') === -1) return chalk.red(line);
           return chalk.grey(line);
         }).join('\n');
       } else {
@@ -133,7 +133,9 @@ function formatMessages(chalk, ...messages) {
 }
 
 function getCallee(chalk) {
-  const stack = new Error().stack.split('\n')[7].split('(')[1].split(')')[0];
+  const object = {};
+  Error.captureStackTrace(object);
+  const stack = object.stack.split('\n')[7].split('(')[1].split(')')[0];
   if (chalk !== undefined) return chalk.grey(stack);
   return stack;
 }
@@ -269,7 +271,7 @@ function validateConfiguration(userConfiguration) {
   if (userConfiguration.callee && typeof userConfiguration.callee !== 'boolean') throw new Error('Invalid configuration value for the property "callee" must be of type "boolean".');
   if (userConfiguration.json && typeof userConfiguration.json !== 'boolean') throw new Error('Invalid configuration value for the property "json" must be of type "boolean".'); // If chalk is defined make sure it's of correct type.
 
-  const chalkIsNotUndefinedButIsIncorrect = userConfiguration.chalk !== undefined && userConfiguration.chalk.constructor !== undefined && userConfiguration.chalk.constructor.name !== 'Chalk';
+  const chalkIsNotUndefinedButIsIncorrect = userConfiguration.chalk !== undefined && userConfiguration.chalk.constructor !== undefined && Object.getPrototypeOf(userConfiguration.chalk).constructor.name !== 'Chalk';
 
   if (chalkIsNotUndefinedButIsIncorrect) {
     throw new Error('Configuration value for property "chalk" must be of instance "Chalk".');
@@ -392,3 +394,4 @@ function trace(date, transports, ...messages) {
   devLog('trace messages:', messages);
   transports.forEach(func => func(date, 'TRACE', ...messages));
 }
+//# sourceMappingURL=index.js.map

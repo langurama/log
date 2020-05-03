@@ -392,7 +392,6 @@ describe('Node', () => {
         });
         it('should display all types in color when using chalk', () => {
             // Setup.
-            const uuid = uuidv4();
             const messages = [
                 ['string', / string /],
                 [true, /\[33mtrue\[39m/],
@@ -402,9 +401,8 @@ describe('Node', () => {
                 [null, /\[34mnull\[39m/],
                 [{ herro: 'herro' }, /"herro": "herro"\n/],
                 [Symbol(666), / Symbol\(666\) /],
-                [new Error('help'), /\[90mError: help\[39m/]
+                [new Error('help'), /\[31mError: help\[39m/]
             ];
-
             const log = languramaLog({ ...defaultTerminalConfiguration, level: 'trace', chalk });
             const mock = jest.spyOn(process.stdout, 'write').mockImplementation(() => {});
             // Test.
@@ -471,7 +469,6 @@ describe('Node', () => {
             error.stack = `${
                 error.stack.split('\n')[0]
             }\n    at processTicksAndRejections (internal/process/task_queues.js:94:5)`;
-            testLog(error.stack);
             // Test.
             log.error(error);
             // Assert.
@@ -786,6 +783,7 @@ describe('Node', () => {
     });
 
     afterEach(() => {
+        // Teardown.
         jest.clearAllMocks();
     });
 

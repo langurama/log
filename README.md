@@ -5,11 +5,22 @@
 ![Version](https://img.shields.io/npm/v/@langurama/log.svg?style=for-the-badge)
 ![License](https://img.shields.io/npm/l/@langurama/log.svg?style=for-the-badge)
 
-Due to the retardedness of some of the libraries not providing a _simple_ human readable logging library, which can log to file and stdout, I had to tell someone to hold my beer so I could.
+Due to the retardedness of some of the libraries not providing a _simple_ human readable logging library, which can log to file and stdout/stderr, I had to tell someone to hold my beer so I could.
+
+## Contents.
+
+-   [ Install ](#install)
+-   [ Configuration ](#configuration)
+-   [ Example ](#example)
+-   [ How it works ](#how-it-works)
+
+<a name="install"></a>
 
 ## Install
 
-`npm install --save-prod --save-exact @langurama/log`
+```
+npm install --save-prod --save-exact @langurama/log
+```
 
 <a name="configuration"></a>
 
@@ -58,15 +69,19 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stdout._
 
+<a name="example"></a>
+
 ## Example
 
-You may check the `example/` directory for an runnable example file.
+You may check the `example/` directory for an runnable example files.
+
+Example output:
 
 ```
 import { default as languramaLog } from 'log';
 import { default as chalk } from 'chalk'; // If you want to have colors in the terminal.
 
-const log = languramaLog.create([
+const log = languramaLog([
     {
         type: 'file',
         path: 'log/foo2.log',
@@ -151,3 +166,9 @@ File `log/foo2.log`:
 {"timestamp":"2020-05-02 15:56:39 UTC+2","level":"ERROR","message":"Error: F*ck\n    at Object.<anonymous> (/home/karl/dev/log/example/index.js:74:11)\n    at Module._compile (internal/modules/cjs/loader.js:955:30)\n    at Module._compile (/home/karl/dev/log/node_modules/pirates/lib/index.js:99:24)\n    at Module._extensions..js (internal/modules/cjs/loader.js:991:10)\n    at Object.newLoader [as .js] (/home/karl/dev/log/node_modules/pirates/lib/index.js:104:7)\n    at Module.load (internal/modules/cjs/loader.js:811:32)\n    at Function.Module._load (internal/modules/cjs/loader.js:723:14)\n    at Function.Module.runMain (internal/modules/cjs/loader.js:1043:10)\n    at Object.<anonymous> (/home/karl/dev/log/node_modules/@babel/node/lib/_babel-node.js:180:21)\n    at Module._compile (internal/modules/cjs/loader.js:955:30)"}
 {"timestamp":"2020-05-02 15:56:39 UTC+2","level":"WARN","message":"This is a warning."}
 ```
+
+<a name="how-it-works"></a>
+
+## How it works
+
+This package transpiles code to `CommonJS` via `Babel` targeted at the current `Node.js` LTS version. To use this in the browser you will need to transpile it from `CommonJS`.

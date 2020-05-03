@@ -1,6 +1,6 @@
 {
     "name": "@langurama/log",
-    "version": "1.0.1-rc2",
+    "version": "1.0.1-rc3",
     "description": "Retardedly basic terminal and file logging for Node.js and the browser.",
     "author": "Karl Morrison <karl@langurama.com>",
     "license": "MIT",
@@ -21,9 +21,10 @@
         "style": "npx prettier --check \"./**/*.js\" --check \"./**/*.json\"",
         "style_fix": "npx prettier --write \"./**/*.js\" --write \"./**/*.json\"",
         "test": "npx jest --verbose --coverage --color",
-        "build": "npx babel ./source/ -d ./distributable/",
+        "build": "npx babel ./source/ -d ./distributable/ --source-maps",
         "dev": "nodemon",
-        "start": "npx babel-node -- ./example/index.js",
+        "start_es": "npm run build && npx babel-node -- ./example/ecmascript.js",
+        "start_cjs": "npm run build && node ./example/common-js.js",
         "start_dev": "npx babel-node -- ./example/index.js --dev",
         "check": "npm run lint && npm run style && npm test && npm run build && npm pack"
     },
@@ -36,7 +37,6 @@
         "@babel/core": "7.9.0",
         "@babel/node": "7.8.7",
         "@babel/preset-env": "7.9.5",
-        "babel-jest": "25.3.0",
         "chai": "4.2.0",
         "chai-spies": "1.0.0",
         "chalk": "2.4.2",
