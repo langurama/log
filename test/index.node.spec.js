@@ -467,8 +467,13 @@ describe('Node', () => {
             // Setup.
             const log = languramaLog();
             const mock = jest.spyOn(process.stderr, 'write').mockImplementation(() => {});
+            const error = new Error('shite');
+            error.stack = `${
+                error.stack.split('\n')[0]
+            }\n    at processTicksAndRejections (internal/process/task_queues.js:94:5)`;
+            testLog(error.stack);
             // Test.
-            log.error(new Error('shite'));
+            log.error(error);
             // Assert.
             expect(mock).toHaveBeenCalledTimes(1);
             expect(mock).toHaveBeenCalledWith(jasmine.stringMatching(/\(internal\//));
