@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = create;
+exports.default = createLanguramaLog;
 exports.error = error;
 exports.warn = warn;
 exports.info = info;
@@ -279,7 +279,7 @@ function validateConfiguration(userConfiguration) {
 } ////////////////////////////////////////////////////////////////////////////////
 
 
-function create(userConfigurationOrConfigurations) {
+function createLanguramaLog(userConfigurationOrConfigurations) {
   devLog('Recieved user configuration or configurations:', userConfigurationOrConfigurations); ////////////////////////////////////////////////////////////////////////////////
   // Validate configuration.
 
