@@ -129,7 +129,9 @@ function formatMessages(chalk, ...messages) {
 }
 
 function getCallee(chalk) {
-    const stack = new Error().stack
+    const object = {};
+    Error.captureStackTrace(object);
+    const stack = object.stack
         .split('\n')[7]
         .split('(')[1]
         .split(')')[0];
