@@ -1,6 +1,6 @@
 {
     "name": "@langurama/log",
-    "version": "1.0.1-rc3",
+    "version": "1.0.1-rc4",
     "description": "Retardedly basic terminal and file logging for Node.js and the browser.",
     "author": "Karl Morrison <karl@langurama.com>",
     "license": "MIT",
@@ -26,7 +26,9 @@
         "start_es": "npm run build && npx babel-node -- ./example/ecmascript.js",
         "start_cjs": "npm run build && node ./example/common-js.js",
         "start_dev": "npx babel-node -- ./example/index.js --dev",
-        "check": "npm run lint && npm run style && npm test && npm run build && npm pack"
+        "check": "npm run lint && npm run style && npm test && npm run build && npm pack",
+        "pack": "npm pack --verbose",
+        "publish": "npm publish --access public"
     },
     "engines": {
         "node": "12"
