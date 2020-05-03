@@ -107,7 +107,7 @@ function formatMessages(chalk, ...messages) {
                 newMessage += argument.stack
                     .split('\n')
                     .map(line => {
-                        if (line.indexOf('(internal/') !== -1) return chalk.red(line);
+                        if (line.indexOf('(internal/') === -1) return chalk.red(line);
                         return chalk.grey(line);
                     })
                     .join('\n');
@@ -385,7 +385,7 @@ function validateConfiguration(userConfiguration) {
     const chalkIsNotUndefinedButIsIncorrect =
         userConfiguration.chalk !== undefined &&
         (userConfiguration.chalk.constructor !== undefined &&
-            userConfiguration.chalk.constructor.name !== 'Chalk');
+            Object.getPrototypeOf(userConfiguration.chalk).constructor.name !== 'Chalk');
     if (chalkIsNotUndefinedButIsIncorrect) {
         throw new Error('Configuration value for property "chalk" must be of instance "Chalk".');
     }
@@ -393,9 +393,8 @@ function validateConfiguration(userConfiguration) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export default function create(userConfigurationOrConfigurations) {
+export default function createLanguramaLog(userConfigurationOrConfigurations) {
     devLog('Recieved user configuration or configurations:', userConfigurationOrConfigurations);
-
     ////////////////////////////////////////////////////////////////////////////////
 
     // Validate configuration.
