@@ -31,7 +31,7 @@ npm install --save-prod --save-exact @langurama/log
 
 ### \<LanguramaLog\>
 
-#### create(configuration)
+#### createLanguramaLog(configuration)
 
 -   configuration **\<Configuration\> | <Configuration[]>** _Default: TerminalConfiguration_
     -   Configuration **<TerminalConfiguration | FileConfiguration>**
@@ -171,4 +171,4 @@ File `log/foo2.log`:
 
 ## How it works
 
-This package transpiles code to `CommonJS` via `Babel` targeted at the current `Node.js` LTS version. To use this in the browser you will need to transpile it from `CommonJS`.
+This package transpiles code to `CommonJS` via `Babel` targeted at the current `Node.js` LTS version. To use this in the browser you will need to transpile it from `CommonJS` to your targeted browser(s).
