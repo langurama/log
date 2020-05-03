@@ -28,7 +28,7 @@
         "start_dev": "npx babel-node -- ./example/index.js --dev",
         "check": "npm run lint && npm run style && npm test && npm run build && npm pack",
         "pack": "npm pack --verbose",
-        "publish": "npm publish --access public"
+        "publish": "npm publish --access public --verbose"
     },
     "engines": {
         "node": "12"
