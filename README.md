@@ -33,21 +33,21 @@ npm install --save-prod --save-exact @langurama/log
 
 #### createLanguramaLog(configuration)
 
--   configuration **\<Configuration\> | <Configuration[]>** _Default: TerminalConfiguration_
-    -   Configuration **<TerminalConfiguration | FileConfiguration>**
-        -   TerminalConfiguration **\<Object\>** _Only one per log instance._
+-   configuration **\<LanguramaConfiguration\> | <LanguramaConfiguration[]>** _Default: TerminalConfiguration_
+    -   LanguramaConfiguration **<LanguramaTerminalConfiguration | LanguramaFileConfiguration>**
+        -   LanguramaTerminalConfiguration **\<Object\>** _Only one per log instance._
             -   type **\<string\>** Valid values: [terminal] **Required**
             -   level **\<string\>** Valid values: [error, warn, info, debug, trace] _Default: info_
             -   callee **\<boolean\>** _Default: true_
             -   chalk **\<Chalk\>** _Display logs in terminal in color using the Chalk module instance._
-        -   FileConfiguration **\<Object\>**
+        -   LanguramaFileConfiguration **\<Object\>**
             -   type **\<string\>** Valid values: [file] **Required**
             -   level **\<string\>** Valid values: [error, warn, info, debug, trace] _Default: info_
             -   path **\<string\>** _Path where log should be written to._ _Default: ./log/application.log_
             -   json **\<boolean\>** _Write to log file in JSON format._ _Default: false_
--   Returns: **\<Log\>**
+-   Returns: **\<LanguramaLog\>**
 
-### \<Log\>
+### \<LanguramaLog\>
 
 #### error([...messages])
 
