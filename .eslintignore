@@ -2,7 +2,7 @@ coverage/
 example/
 test/
 .ignore/
-distributable/
+dist/
 log/
 node_modules/
 *.log
