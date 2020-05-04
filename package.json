@@ -1,6 +1,6 @@
 {
     "name": "@langurama/log",
-    "version": "1.0.1",
+    "version": "1.1.0-rc1",
     "description": "Retardedly basic terminal and file logging for Node.js and the browser.",
     "author": "Karl Morrison <karl@langurama.com>",
     "license": "MIT",
@@ -20,6 +20,7 @@
         "lint_fix": "npx eslint . --fix",
         "style": "npx prettier --check \"./**/*.js\" --check \"./**/*.json\"",
         "style_fix": "npx prettier --write \"./**/*.js\" --write \"./**/*.json\"",
+        "type": "npx tsc",
         "test": "npx jest --verbose --coverage --color",
         "build": "npx babel ./src/ -d ./dist/ --source-maps",
         "dev": "nodemon",
@@ -46,6 +47,7 @@
         "jest": "24.9.0",
         "nodemon": "1.19.2",
         "prettier": "1.18.2",
+        "typescript": "3.8.3",
         "uuid": "8.0.0"
     }
 }
