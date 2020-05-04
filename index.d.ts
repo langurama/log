@@ -24,7 +24,7 @@ declare module '@langurama/log' {
         trace: (...messages: any) => void;
     }
 
-    export default function createLanguramaLog(
-        configurationOrConfigurations?: LanguramaConfiguration | LanguramaConfiguration[]
+    export default function languramaLog(
+        configuration?: LanguramaConfiguration | LanguramaConfiguration[]
     ): LanguramaLog;
 }

@@ -393,7 +393,7 @@ function validateConfiguration(userConfiguration) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-export default function createLanguramaLog(userConfigurationOrConfigurations) {
+export default function languramaLog(userConfigurationOrConfigurations) {
     devLog('Recieved user configuration or configurations:', userConfigurationOrConfigurations);
     ////////////////////////////////////////////////////////////////////////////////
 
