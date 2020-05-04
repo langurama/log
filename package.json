@@ -1,6 +1,6 @@
 {
     "name": "@langurama/log",
-    "version": "1.1.1-rc1",
+    "version": "1.1.1-rc2",
     "description": "Retardedly basic terminal and file logging for Node.js and the browser.",
     "author": "Karl Morrison <karl@langurama.com>",
     "license": "MIT",
@@ -28,8 +28,9 @@
         "start_cjs": "npm run build && node ./example/commonjs.js",
         "start_dev": "npx babel-node -- ./example/index.js --dev",
         "check": "npm run lint && npm run style && npm test && npm run build && npm pack",
-        "pack": "npm pack --verbose",
-        "publish": "npm publish --access public --verbose"
+        "bump": "npm install && VER=v$(node -p \"require('./package.json').version\") && git tag -a \"$VER\" -m \"$VER\"",
+        "pk": "npm pack --verbose",
+        "pub": "npm publish --access public --verbose"
     },
     "engines": {
         "node": "12"
@@ -43,10 +44,12 @@
         "chai": "4.2.0",
         "chai-spies": "1.0.0",
         "chalk": "2.4.2",
+        "cross-env": "7.0.2",
         "eslint": "6.3.0",
         "jest": "24.9.0",
         "nodemon": "1.19.2",
         "prettier": "1.18.2",
+        "shx": "0.3.2",
         "typescript": "3.8.3",
         "uuid": "8.0.0"
     }
