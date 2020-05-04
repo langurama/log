@@ -1,9 +1,9 @@
 # @langurama/log
 
-![Build](https://img.shields.io/github/workflow/status/langurama/log/Langurama%20Log?style=for-the-badge)
-![Coverage](https://img.shields.io/codecov/c/github/langurama/log?style=for-the-badge)
-![Version](https://img.shields.io/npm/v/@langurama/log.svg?style=for-the-badge)
-![License](https://img.shields.io/npm/l/@langurama/log.svg?style=for-the-badge)
+[![Build](https://img.shields.io/github/workflow/status/langurama/log/Langurama%20Log?style=for-the-badge)](https://github.com/langurama/log/actions?query=workflow%3A%22Langurama+Log%22)
+[![Coverage](https://img.shields.io/codecov/c/github/langurama/log?style=for-the-badge)](https://codecov.io/gh/langurama/log/branch/master)
+[![Version](https://img.shields.io/npm/v/@langurama/log.svg?style=for-the-badge)](https://www.npmjs.com/package/@langurama/log)
+[![License](https://img.shields.io/npm/l/@langurama/log.svg?style=for-the-badge)](https://github.com/langurama/log/blob/master/LICENSE)
 
 Due to the retardedness of some of the libraries not providing a _simple_ human readable logging library, which can log to file and stdout/stderr, I had to tell someone to hold my beer so I could.
 
