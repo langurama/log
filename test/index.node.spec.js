@@ -20,7 +20,7 @@ import {
     defaultTerminalConfiguration,
     defaultFileConfiguration,
     info
-} from '../source';
+} from '../src';
 // eslint-disable-next-line no-unused-vars
 import { testLog } from './helper';
 

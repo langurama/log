@@ -4,7 +4,7 @@ coverage/
 example/
 log/
 !node_modules/
-source/
+src/
 test/
 .*
 *.log

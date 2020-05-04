@@ -1,5 +1,5 @@
 {
-    "watch": ["./source", "./test", "./example"],
+    "watch": ["./src", "./test", "./example"],
     "exec": "npm run test && npm run start_dev",
     "verbose": true
 }
