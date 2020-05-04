@@ -1,6 +1,6 @@
 {
     "name": "@langurama/log",
-    "version": "1.1.1-rc3",
+    "version": "1.1.1-rc4",
     "description": "Retardedly basic terminal and file logging for Node.js and the browser.",
     "author": "Karl Morrison <karl@langurama.com>",
     "license": "MIT",

@@ -31,7 +31,7 @@ npm install --save-prod --save-exact @langurama/log
 
 ### \<LanguramaLog\>
 
-#### createLanguramaLog(configuration)
+#### languramaLog(configuration)
 
 -   configuration **\<LanguramaConfiguration\> | <LanguramaConfiguration[]>** _Default: TerminalConfiguration_
     -   LanguramaConfiguration **<LanguramaTerminalConfiguration | LanguramaFileConfiguration>**
