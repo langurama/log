@@ -78,7 +78,7 @@ npm install --save-prod --save-exact @langurama/log
 
 ## Example
 
-You may check the `example/` directory for an runnable example files.
+You may check the `example/` directory for runnable example files.
 
 Example output:
 
