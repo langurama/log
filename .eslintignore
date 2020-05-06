@@ -1,8 +1,7 @@
-coverage/
-example/
-test/
 .ignore/
+coverage/
 dist/
+example/
 log/
 node_modules/
 *.log

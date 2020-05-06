@@ -1,12 +1,11 @@
-_*/
+!node_modules/
 .*/
 coverage/
 example/
 log/
-!node_modules/
 src/
 test/
-.*
-*.log
+_*/
 *.json
+*.log
 langurama-log-*.tgz

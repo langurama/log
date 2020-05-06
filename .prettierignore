@@ -1,9 +1,8 @@
-.tmp/
 .ignore/
 coverage/
 dist/
 example/
 log/
 node_modules/
-application.log
-test.log
+test/.tmp/
+*.log

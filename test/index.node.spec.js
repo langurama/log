@@ -79,15 +79,6 @@ function createFileLog(filePath) {
     });
 }
 
-function getMockedRun() {
-    return mockedRun({
-        stdout: mockProcessStdout,
-        stderr: mockProcessStderr,
-        exit: mockProcessExit,
-        log: mockConsoleLog
-    });
-}
-
 describe('Node', () => {
     describe('Configuration', () => {
         it('should create a log object with default configuration', () => {
