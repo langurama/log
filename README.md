@@ -33,8 +33,8 @@ npm install --save-prod --save-exact @langurama/log
 
 #### languramaLog(configuration)
 
--   configuration **\<LanguramaConfiguration\> | <LanguramaConfiguration[]>** _Default: TerminalConfiguration_
-    -   LanguramaConfiguration **<LanguramaTerminalConfiguration | LanguramaFileConfiguration>**
+-   configuration **\<LanguramaConfiguration\> | <LanguramaConfiguration[]>** _Default: LanguramaConfiguration_
+    -   LanguramaConfiguration **<LanguramaTerminalConfiguration | LanguramaFileConfiguration>** _Default: LanguramaTerminalConfiguration_
         -   LanguramaTerminalConfiguration **\<Object\>** _Only one per log instance._
             -   type **\<string\>** Valid values: [terminal] **Required**
             -   level **\<string\>** Valid values: [error, warn, info, debug, trace] _Default: info_
