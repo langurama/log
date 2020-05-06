@@ -8,4 +8,6 @@ test/
 _*/
 *.json
 *.log
-langurama-log-*.tgz
+*log*.tgz
+.*
+
