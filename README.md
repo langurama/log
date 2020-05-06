@@ -10,7 +10,7 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
 ## Contents.
 
 -   [ Install ](#install)
--   [ Configuration ](#configuration)
+-   [ Usage ](#usage)
 -   [ Example ](#example)
 -   [ How it works ](#how-it-works)
 
@@ -22,9 +22,9 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
 npm install --save-prod --save-exact @langurama/log
 ```
 
-<a name="configuration"></a>
+<a name="usage"></a>
 
-## Configuration
+## Usage
 
 -   Terminal transport works in both Node.js and the browser.
 -   File transport works only in Node.js.
