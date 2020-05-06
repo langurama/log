@@ -1,7 +1,5 @@
-.tmp/
 .ignore/
 coverage/
-example/
 log/
 node_modules/
 test/.tmp/
