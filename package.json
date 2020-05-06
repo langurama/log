@@ -28,8 +28,9 @@
         "start_cjs": "npm run build && node ./example/commonjs.js",
         "start_dev": "npx babel-node -- ./example/index.js --dev",
         "check": "npm run lint && npm run style && npm test && npm run build && npm pack",
-        "tag": "VER=v$(node -p \"require('./package.json').version\") && git tag -a \"$VER\" -m \"$VER\"",
         "pk": "npm pack --verbose",
+        "bump": "npm install",
+        "tag": "VER=v$(node -p \"require('./package.json').version\") && git tag -a \"$VER\" -m \"$VER\"",
         "pub": "npm publish --access public --verbose"
     },
     "engines": {
