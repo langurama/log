@@ -52,22 +52,27 @@ npm install --save-prod --save-exact @langurama/log
 #### error([...messages])
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stderr._
+-   Returns: **\<undefined\>**
 
 #### warn([...message])
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stderr._
+-   Returns: **\<undefined\>**
 
 #### info([...message])
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stdout._
+-   Returns: **\<undefined\>**
 
 #### debug([...message])
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stdout._
+-   Returns: **\<undefined\>**
 
 #### trace([...message])
 
 -   messages **<string | undefined | null | boolean | number | bigint | Object | Symbol | Error>** _Writes to stdout._
+-   Returns: **\<undefined\>**
 
 <a name="example"></a>
 
