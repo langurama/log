@@ -31,7 +31,7 @@
         "pk": "npm pack --verbose",
         "bump": "npm install",
         "tag": "VER=v$(node -p \"require('./package.json').version\") && git tag -a \"$VER\" -m \"$VER\"",
-        "pub": "npm publish --access public --verbose"
+        "pub": "git push --tags && npm publish --access public --verbose"
     },
     "engines": {
         "node": "12"
