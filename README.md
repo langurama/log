@@ -80,7 +80,7 @@ npm install --save-prod --save-exact @langurama/log
 
 You may check the `example/` directory for runnable example files.
 
-Example output:
+Example usage:
 
 ```
 import { default as languramaLog } from 'log';
