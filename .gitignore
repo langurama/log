@@ -5,4 +5,4 @@ log/
 node_modules/
 test/.tmp/
 *.log
-langurama-log-*.tgz
+*log*.tgz
