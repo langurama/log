@@ -131,10 +131,8 @@ function formatMessages(chalk, ...messages) {
 function getCallee(chalk) {
     const object = {};
     Error.captureStackTrace(object);
-    const stack = object.stack
-        .split('\n')[7]
-        .split('(')[1]
-        .split(')')[0];
+    const row = object.stack.split('\n')[7];
+    const stack = row.indexOf('(') === -1 ? row.split('at ')[1] : row.split('(')[1].split(')')[0];
     if (chalk !== undefined) return chalk.grey(stack);
     return stack;
 }
