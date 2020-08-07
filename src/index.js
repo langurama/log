@@ -248,7 +248,8 @@ function createFileTransport(configuration) {
     // prettier-ignore
     const isAnAbsolutePath =
         configuration.path.startsWith('/') // Linux/macOS.
-        || configuration.path.substring(1).startsWith(':/'); // Windows.
+        || configuration.path.substring(1).startsWith(':/') // Windows.
+        || configuration.path.substring(1).startsWith(':\\'); // Windows.
     devLog(`Is absolute path: ${isAnAbsolutePath}`);
     // prettier-ignore
     const logDirectoryPathTmp = configuration.path.split('/');
