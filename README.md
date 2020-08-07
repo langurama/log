@@ -13,6 +13,7 @@ Due to the retardedness of some of the libraries not providing a _simple_ human 
 -   [ Usage ](#usage)
 -   [ Example ](#example)
 -   [ How it works ](#how-it-works)
+-   [ Development ](#development)
 
 <a name="install"></a>
 
@@ -177,3 +178,8 @@ File `log/foo2.log`:
 ## How it works
 
 This package transpiles code to `CommonJS` via `Babel` targeted at the current `Node.js` LTS version. To use this in the browser you will need to transpile it from `CommonJS` to your targeted browser(s).
+
+## Development
+
+When developing this library, it assumes that NPM is using the bash shell.
+Remember to set the correct Git email when developing.
