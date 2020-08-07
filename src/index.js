@@ -8,11 +8,7 @@ import { default as path } from 'path';
 const isBrowser = typeof window === 'undefined' ? false : true;
 
 // Check if this package is in development mode.
-const isDev = process.argv.reduce(function(value, argument) {
-    /* istanbul ignore next */
-    if (value || argument === '--dev') return true;
-    return false;
-}, false);
+const isDev = process.env.LANGURAMA_LOG_ENV === 'development';
 
 ////////////////////////////////////////////////////////////////////////////////
 

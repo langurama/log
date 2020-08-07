@@ -26,7 +26,7 @@
         "dev": "nodemon",
         "start_es": "npm run build && npx babel-node -- ./example/ecmascript.js",
         "start_cjs": "npm run build && node ./example/commonjs.js",
-        "start_dev": "npx babel-node -- ./example/index.js --dev",
+        "start_dev": "LANGURAMA_LOG_ENV=development npx babel-node -- ./example/index.js",
         "check": "npm run lint && npm run style && npm test && npm run type && npm run build",
         "bump": "npm install",
         "tag": "VER=v$(node -p \"require('./package.json').version\") && git tag -a \"$VER\" -m \"$VER\"",
