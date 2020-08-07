@@ -27,10 +27,10 @@
         "start_es": "npm run build && npx babel-node -- ./example/ecmascript.js",
         "start_cjs": "npm run build && node ./example/commonjs.js",
         "start_dev": "npx babel-node -- ./example/index.js --dev",
-        "check": "npm run lint && npm run style && npm test && npm run build && npm pack",
-        "pk": "npm pack --verbose",
+        "check": "npm run lint && npm run style && npm test && npm run type && npm run build",
         "bump": "npm install",
         "tag": "VER=v$(node -p \"require('./package.json').version\") && git tag -a \"$VER\" -m \"$VER\"",
+        "pre_pub": "npm run check && npm pack --verbose && npm run tag",
         "pub": "git push --tags && npm publish --access public --verbose"
     },
     "engines": {
