@@ -18,15 +18,6 @@ function devLog(...messages) {
     if (isDev) console.log('[@langurama/log]', ...messages);
 }
 
-function createLogsDirectory(logsDirPath) {
-    if (!fs.existsSync(logsDirPath)) {
-        devLog(`Creating log directory: ${logsDirPath}`);
-        fs.mkdirSync(logsDirPath, { recursive: true });
-    } else {
-        devLog(`Log directory already existed: ${logsDirPath}`);
-    }
-}
-
 function getTimestamp(date) {
     let year = date.getFullYear().toString();
 
@@ -242,21 +233,24 @@ function createFileTransport(configuration) {
     const shouldJsonFormat = configuration.json === true ? true : false;
     // File path.
     // prettier-ignore
-    const isAnAbsolutePath =
-        configuration.path.startsWith('/') // Linux/macOS.
-        || configuration.path.substring(1).startsWith(':/') // Windows.
-        || configuration.path.substring(1).startsWith(':\\'); // Windows.
+    const isAnAbsolutePath = path.isAbsolute(configuration.path);
     devLog(`Is absolute path: ${isAnAbsolutePath}`);
     // prettier-ignore
-    const logDirectoryPathTmp = configuration.path.split('/');
+    const logDirectoryPathTmp = configuration.path.split(path.sep);
     logDirectoryPathTmp.pop();
-    const logDirectoryPath = logDirectoryPathTmp.join('/');
+    const logDirectoryPath = logDirectoryPathTmp.join(path.sep);
     devLog(`Log directory path: ${logDirectoryPath}`);
 
     const absoluteLogDirectoryPath = isAnAbsolutePath
         ? logDirectoryPath
         : path.join(process.cwd(), logDirectoryPath);
-    createLogsDirectory(absoluteLogDirectoryPath);
+
+    if (!fs.existsSync(absoluteLogDirectoryPath)) {
+        devLog(`Creating log directory: ${absoluteLogDirectoryPath}`);
+        fs.mkdirSync(absoluteLogDirectoryPath, { recursive: true });
+    } else {
+        devLog(`Log directory already existed: ${absoluteLogDirectoryPath}`);
+    }
 
     const absoluteFilePath = isAnAbsolutePath
         ? configuration.path
@@ -307,7 +301,7 @@ export const defaultFileConfiguration = {
     type: 'file',
     level: 'info',
     callee: false,
-    path: './log/application.log',
+    path: path.join('.', 'log', 'application.log'),
     json: false
 };
 
